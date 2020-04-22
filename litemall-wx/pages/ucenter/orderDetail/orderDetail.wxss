@@ -57,8 +57,9 @@ page {
 }
 
 .item-c .btn.active {
-  background: #b4282d;
+  background: #c44408;
   color: #fff;
+  border-radius: 2prx;
 }
 
 .order-goods {
@@ -194,21 +195,27 @@ page {
   height: 35rpx;
   line-height: 35rpx;
   margin-bottom: 7.5rpx;
+
 }
 
 .order-bottom .address .name {
   display: inline-block;
   height: 35rpx;
-  width: 140rpx;
+  width: 160rpx;
   line-height: 35rpx;
   font-size: 30rpx;
+  max-width: 160rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .order-bottom .address .mobile {
   display: inline-block;
   height: 35rpx;
   line-height: 35rpx;
-  font-size: 30rpx;
+  font-size: 26rpx;
+  color: #666;
 }
 
 .order-bottom .address .b {

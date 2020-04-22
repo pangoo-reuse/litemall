@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-
     <context id="mysqlgenerator" targetRuntime="MyBatis3">
         <property name="autoDelimitKeywords" value="true"/>
         <!--可以使用``包括字段名，避免字段名与sql保留字冲突报错-->
@@ -183,6 +182,9 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="pictures" javaType="java.lang.String[]"
                             typeHandler="org.linlinjava.litemall.db.mybatis.JsonStringArrayTypeHandler"/>
+        </table>
+        <table tableName="litemall_shipping_config">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>
 </generatorConfiguration>

@@ -1,6 +1,7 @@
 var util = require('../../utils/util.js');
 var api = require('../../config/api.js');
-
+//获取应用实例
+const app = getApp();
 Page({
   data: {
     categoryList: [],
@@ -13,6 +14,7 @@ Page({
   },
   onLoad: function(options) {
     this.getCatalog();
+    
   },
   onPullDownRefresh() {
     wx.showNavigationBarLoading() //在标题栏中显示加载
@@ -55,9 +57,11 @@ Page({
   },
   onReady: function() {
     // 页面渲染完成
+   
   },
   onShow: function() {
     // 页面显示
+    app.getPermission(this);
   },
   onHide: function() {
     // 页面隐藏

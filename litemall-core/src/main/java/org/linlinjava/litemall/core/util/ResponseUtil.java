@@ -117,6 +117,13 @@ public class ResponseUtil {
         return fail(402, "参数值不对");
     }
 
+    public static Object existsValue() {
+        return fail(403, "对象已存在");
+    }
+    public static Object notExistsValue() {
+        return fail(404, "对象不存在");
+    }
+
     public static Object unlogin() {
         return fail(501, "请登录");
     }

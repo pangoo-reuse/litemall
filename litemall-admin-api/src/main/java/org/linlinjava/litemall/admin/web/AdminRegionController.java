@@ -1,5 +1,7 @@
 package org.linlinjava.litemall.admin.web;
 
+import com.google.common.collect.Maps;
+import jodd.util.StringUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.admin.vo.RegionVo;
@@ -13,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -83,5 +83,41 @@ public class AdminRegionController {
         }
 
         return ResponseUtil.okList(regionVoList);
+    }
+
+    @GetMapping("/region")
+    public Object queryRegion(@NotNull String name) {
+        List<LitemallRegion> regionList = regionService.querySelective(name, null, 1, 80, null, null);
+        List<Map<String,Object>> result = new LinkedList<Map<String,Object>>();
+        if (regionList != null && regionList.size() > 0) {
+            regionList.forEach(reg -> {
+                List<LitemallRegion> address = new LinkedList<LitemallRegion>();
+                String region = recycleFindRegion(reg, address);
+                System.out.println("address:" + region+reg.getName());
+                Map<String,Object> res =  Maps.newTreeMap();
+                res.put("id",reg.getId());
+                res.put("code",reg.getCode());
+                res.put("name",reg.getName());
+                res.put("address",region+reg.getName());
+                result.add(res);
+            });
+        }
+        return ResponseUtil.okList(result);
+    }
+
+    private String recycleFindRegion(LitemallRegion region,   List<LitemallRegion> address) {
+        int pid = region.getPid();
+        if (pid != 0) {
+            LitemallRegion reg = regionService.findById(pid);
+            address.add(reg);
+            return recycleFindRegion(reg, address);
+        } else {
+            address.sort(Comparator.comparingInt(LitemallRegion::getPid));
+            StringBuffer sb = new StringBuffer();
+            for (LitemallRegion lr : address) {
+                sb.append(lr.getName());
+            }
+            return sb.toString();
+        }
     }
 }

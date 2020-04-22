@@ -24,8 +24,9 @@ page {
 }
 
 .address-box .l {
-  width: 125rpx;
+  width: 225rpx;
   height: 100%;
+  background-color: #b6b2b2;
 }
 
 .address-box .l .name {
@@ -64,8 +65,8 @@ page {
   height: 29rpx;
   line-height: 29rpx;
   margin-bottom: 6.25rpx;
-  font-size: 30rpx;
-  color: #333;
+  font-size: 240rpx;
+  color: #504f4f;
 }
 
 .address-box .address {
@@ -123,7 +124,10 @@ page {
   font-size: 30rpx;
   color: #666;
 }
+.coupon-box .l .coupon{
 
+  color: rgb(231, 76, 29) !important;
+}
 .coupon-box .r {
   margin-top: 15.5rpx;
   width: 77rpx;

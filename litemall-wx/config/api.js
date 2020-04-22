@@ -2,7 +2,7 @@
 // 本机开发时使用
 // var WxApiRoot = 'http://localhost:8080/wx/';
 // 局域网测试使用
-var WxApiRoot = 'http://192.168.1.3:8080/wx/';
+var WxApiRoot = 'http://192.168.23.11:8080/wx/';
 // 云平台部署时使用
 // var WxApiRoot = 'http://122.51.199.160:8080/wx/';
 // 云平台上线时使用
@@ -100,4 +100,6 @@ module.exports = {
 
   UserIndex: WxApiRoot + 'user/index', //个人页面用户相关信息
   IssueList: WxApiRoot + 'issue/list', //帮助信息
+
+  MatchArea: WxApiRoot + 'address/match', //匹配当前区信息
 };

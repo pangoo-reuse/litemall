@@ -14,3 +14,10 @@ export function listSubRegion(query) {
     params: query
   })
 }
+export function searchListRegion(query) {
+  return request({
+    url: '/region/region',
+    method: 'get',
+    params: query
+  })
+}

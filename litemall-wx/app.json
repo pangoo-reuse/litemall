@@ -1,4 +1,9 @@
 {
+  "permission":{
+    "scope.userLocation": {
+      "desc": "获取您的位置以便以我们为您匹配优惠好物"
+    }
+  },
   "pages": [
     "pages/index/index",
     "pages/catalog/catalog",

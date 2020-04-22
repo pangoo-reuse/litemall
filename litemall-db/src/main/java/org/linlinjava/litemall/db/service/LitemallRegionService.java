@@ -28,6 +28,11 @@ public class LitemallRegionService {
         example.or().andPidEqualTo(parentId);
         return regionMapper.selectByExample(example);
     }
+    public LitemallRegion queryByCode(Integer code) {
+        LitemallRegionExample example = new LitemallRegionExample();
+        example.or().andCodeEqualTo(code);
+        return regionMapper.selectOneByExample(example);
+    }
 
     public LitemallRegion findById(Integer id) {
         return regionMapper.selectByPrimaryKey(id);
