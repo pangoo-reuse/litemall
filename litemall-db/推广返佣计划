@@ -1,0 +1,58 @@
+------- A用户分享了一件产品，携带了自己的分享码
+------ B 用户页面停留了10秒,点击了带有分享码的产品 -----> 调用广告联盟浏览记录表，写入数据
+------> B 购买时生成订单时写入联盟订单记录表
+---->  在订单完成时 用户点击收货/系统自动确认收货 -----> 调用广告联盟订单成交 写入广告联盟记录表
+
+------> 每天晚上2点开始跑批发放佣金到用户余额  ------>  [用户申请提现发放佣金]
+
+
+后端:
+
+微信登录 ---->  base64(userName) 生成 推广码 ----> 写入user表
+
+--alliance --views 表
+
+--     `id`             int(11) NOT NULL AUTO_INCREMENT,
+--     `referrer_id` int(11) COMMENT '推广者ID',
+--     `viewer_id` int(11) COMMENT '查看者ID',
+--     `referrer_name`   varchar(63) COMMENT '推广者名字',
+--     `viewer_name`   varchar(63) COMMENT '查看者名字',
+--     `goods_id`     int(11) NOT NULL COMMENT '产品ID',
+--     `goods_name`   varchar(63) COMMENT '产品名称',
+--     `view_price`  decimal(10,2) NOT NULL DEFAULT '0' COMMENT '浏览的价格即为产品基础价(元)',
+--     `commission`    decimal(10,2) NOT NULL DEFAULT '0' COMMENT '佣金(元 view_price * 0.04% )',
+--     `state`   int(1)  NOT NULL DEFAULT '0' COMMENT '发放状态 1 已发放 0未发放',
+--     `created_time`   datetime         DEFAULT NULL COMMENT '创建时间',
+--     `update_time`    datetime         DEFAULT NULL COMMENT '更新时间',
+--     `deleted`        tinyint(1)       DEFAULT '0' COMMENT '逻辑删除',
+
+--alliance --orders 表
+
+--     `id`             int(11) NOT NULL AUTO_INCREMENT,
+--     `referrer_id` int(11) COMMENT '推广者ID',
+--     `buyer_id` int(11) COMMENT '购买者ID',
+--     `order_id`     int(11) NOT NULL COMMENT '订单ID',
+--     `referrer_name`   varchar(63) COMMENT '推广者名字',
+--     `buyer_name`   varchar(63) COMMENT '查看者名字',
+--     `order_actual_price`  decimal(10,2) NOT NULL DEFAULT '0' COMMENT '订单实际价格(元)(如果订单未完成则此列为0))',
+--     `commission`    decimal(10,2) NOT NULL DEFAULT '0' COMMENT '佣金(元 order_actual_price * 4% )',
+--     `state`   int(1)  NOT NULL DEFAULT '0' COMMENT '发放状态 1 已发放 0未发放',
+--     `created_time`   datetime         DEFAULT NULL COMMENT '创建时间',
+--     `update_time`    datetime         DEFAULT NULL COMMENT '更新时间',
+--     `deleted`        tinyint(1)       DEFAULT '0' COMMENT '逻辑删除',
+
+
+
+
+广告联盟（alliance） controller -> createViewAlliance() -> 写入 alliance views 表
+referrer_id == viewer_id(推广者与浏览者为同一用户不记录) || viewer_id && goods_id exist (同一个浏览者多次浏览同一个商品只记录一次)
+
+广告联盟（alliance） controller -> createOrderAlliance() ->   referrer_id，buyer_id，order_id，referrer_name，buyer_name，order_actual_price，created_time，update_time写入 alliance orders 表
+
+###### 在订单完成时 用户点击收货/系统自动确认收货 -----> 更新 commission(order_actual_price * 4%) 字段为最终价格
+广告联盟（alliance） controller -> updateOrderAlliance(Order order) -> 写入 alliance order表
+
+
+
+
+
