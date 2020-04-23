@@ -24,9 +24,9 @@ public class DbJob {
     private Environment environment;
 
     /*
-     * 定时时间是每天凌晨5点。
+     * 定时时间是每天凌晨1点。
      */
-    @Scheduled(cron = "0 0 5 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void backup() throws IOException {
         logger.info("系统开启定时任务数据库备份");
 

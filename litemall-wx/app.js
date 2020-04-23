@@ -1,19 +1,47 @@
 var util = require('./utils/util.js');
 var api = require('./config/api.js');
 var user = require('./utils/user.js');
-
+String.prototype.format = function (args) {
+  var result = this;
+  if (arguments.length > 0) {
+    if (arguments.length == 1 && typeof (args) == "object") {
+      for (var key in args) {
+        if (args[key] !== undefined) {
+          var reg = new RegExp("({" + key + "})", "g");
+          result = result.replace(reg, args[key]);
+        }
+      }
+    }
+    else {
+      for (var i = 0; i < arguments.length; i++) {
+        if (arguments[i] !== undefined) {
+          //var reg = new RegExp("({[" + i + "]})", "g");//这个在索引大于9时会有问题
+          var reg2 = new RegExp("({)" + i + "(})", "g");
+          result = result.replace(reg2, arguments[i]);
+        }
+      }
+    }
+  }
+  return result;
+};
 App({
 
   //获取用户地理位置权限
   getPermission: function (obj) {
+    var that = this;
     wx.getLocation({
       type: 'wgs84',
       success(res) {
         const latitude = res.latitude
         const longitude = res.longitude
         console.log(latitude)
+        var url = api.MapUrl.format({
+          latitude: latitude,
+          longitude: longitude
+        });
+        console.log(url)
         wx.request({
-          url: 'https://apis.map.qq.com/ws/geocoder/v1/?location=' + latitude + "," + longitude + "&key=DFVBZ-M5GKJ-5ZIFN-F36EH-TBBS5-WQFTU",
+          url: url,
           success(res) {
             var address = res.data.result.address_component
             var province = address.province;
@@ -22,14 +50,12 @@ App({
             //  "province": "湖北省",
             //   "city": "孝感市",
             //   "district": "孝南区",
-            util.request(api.MatchArea, {
-              'province': province,
-              'city': city,
-              'district': district
-            }).then(function (res) {
-              console.log(res)
-            });
-            console.log(address)
+
+            that.globalData.address = province + city + district;
+            that.globalData.province = province;
+            that.globalData.city = city;
+            that.globalData.district = district;
+
           }
         })
 
@@ -110,14 +136,26 @@ App({
     })
   },
   onShow: function (options) {
+    var that = this;
     user.checkLogin().then(res => {
       this.globalData.hasLogin = true;
+      wx.getStorage({
+        key: 'userInfo',
+        success(res) {
+          that.globalData.selfReferralCode = res.data.referralCode
+        },
+      })
     }).catch(() => {
       this.globalData.hasLogin = false;
     });
   },
   globalData: {
     hasLogin: false,
-    address: undefined
+    province: null,
+    city: null,
+    district: null,
+    address: null,
+    othersReferralCode: null,
+    selfReferralCode: null
   }
 })

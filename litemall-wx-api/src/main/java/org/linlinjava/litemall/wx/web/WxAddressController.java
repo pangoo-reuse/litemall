@@ -29,14 +29,7 @@ public class WxAddressController extends GetRegionService {
 	@Autowired
 	private LitemallAddressService addressService;
 
-	@Autowired
-	private LitemallRegionService regionService;
-	@GetMapping("/match")
-	public Object match(@NotNull String province,String city,String district) {
-		//TODO
-		return ResponseUtil.ok();
 
-	}
 
 	/**
 	 * 用户收货地址列表

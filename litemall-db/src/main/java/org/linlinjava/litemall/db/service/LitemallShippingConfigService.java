@@ -91,6 +91,12 @@ public class LitemallShippingConfigService {
         return shippingConfigMapper.countByExample(example) > 0;
     }
 
+    public boolean existById(Integer id) {
+        LitemallShippingConfigExample example = new LitemallShippingConfigExample();
+        example.or().andIdEqualTo(id).andDeletedEqualTo(LitemallShippingConfig.NOT_DELETED);
+        return shippingConfigMapper.countByExample(example) > 0;
+    }
+
     public LitemallShippingConfig findByAreaCode(String areaCode) {
         LitemallShippingConfigExample example = new LitemallShippingConfigExample();
         LitemallShippingConfig config = findShippingConfigRecycle(example, Integer.parseInt(areaCode));

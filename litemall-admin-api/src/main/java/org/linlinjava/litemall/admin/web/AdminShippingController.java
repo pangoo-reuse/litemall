@@ -98,7 +98,7 @@ public class AdminShippingController {
         if (error != null) {
             return error;
         }
-        boolean exist = shippingConfigService.existByRegionId(shippingConfig.getRegionId());
+        boolean exist = shippingConfigService.existById(shippingConfig.getId());
         if (!exist)  return ResponseUtil.notExistsValue();
         int id = shippingConfigService.updateById(shippingConfig);
         if (id == 0) {

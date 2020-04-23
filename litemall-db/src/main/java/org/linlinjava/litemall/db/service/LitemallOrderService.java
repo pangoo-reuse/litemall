@@ -68,9 +68,9 @@ public class LitemallOrderService {
     public String generateOrderSn(Integer userId) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
         String now = df.format(LocalDate.now());
-        String orderSn = now + getRandomNum(6);
+        String orderSn = now + getRandomNum(10);
         while (countByOrderSn(userId, orderSn) != 0) {
-            orderSn = now + getRandomNum(6);
+            orderSn = now + getRandomNum(10);
         }
         return orderSn;
     }

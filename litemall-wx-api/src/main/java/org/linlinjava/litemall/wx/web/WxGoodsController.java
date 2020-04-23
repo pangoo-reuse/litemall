@@ -8,6 +8,7 @@ import org.linlinjava.litemall.core.system.SystemConfig;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.core.validator.Order;
 import org.linlinjava.litemall.core.validator.Sort;
+import org.linlinjava.litemall.db.dao.LitemallUserReferralMapper;
 import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +75,9 @@ public class WxGoodsController {
 	@Autowired
 	private LitemallGrouponRulesService rulesService;
 
+	@Autowired
+	private LitemallReferralService referralService;
+
 	private final static ArrayBlockingQueue<Runnable> WORK_QUEUE = new ArrayBlockingQueue<>(9);
 
 	private final static RejectedExecutionHandler HANDLER = new ThreadPoolExecutor.CallerRunsPolicy();
@@ -88,9 +93,12 @@ public class WxGoodsController {
 	 * @param userId 用户ID
 	 * @param id     商品ID
 	 * @return 商品详情
+	 *             that.globalData.province = province;
+	 *             that.globalData.city = city;
+	 *             that.globalData.district = district;
 	 */
 	@GetMapping("detail")
-	public Object detail(@LoginUser Integer userId, @NotNull Integer id) {
+	public Object detail(@LoginUser Integer userId, @NotNull Integer id,String province,String city,String district,String referralCode) {
 		// 商品信息
 		LitemallGoods info = goodsService.findById(id);
 
@@ -117,6 +125,7 @@ public class WxGoodsController {
 			}
 			return brand;
 		};
+
 
 		// 评论
 		Callable<Map> commentsCallable = () -> {
@@ -157,6 +166,7 @@ public class WxGoodsController {
 				footprint.setUserId(userId);
 				footprint.setGoodsId(id);
 				footprintService.add(footprint);
+				referralService.createReferral(referralCode,userId,id,info.getName(),info.getRetailPrice());
 			});
 		}
 		FutureTask<List> goodsAttributeListTask = new FutureTask<>(goodsAttributeListCallable);

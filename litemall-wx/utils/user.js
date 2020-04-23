@@ -3,7 +3,7 @@
  */
 const util = require('../utils/util.js');
 const api = require('../config/api.js');
-
+var app = getApp();
 
 /**
  * Promise封装wx.checkSession
@@ -57,7 +57,7 @@ function loginByWeixin(userInfo) {
           //存储用户信息
           wx.setStorageSync('userInfo', res.data.userInfo);
           wx.setStorageSync('token', res.data.token);
-
+          app.globalData.selfReferralCode = res.data.userInfo.referralCode;
           resolve(res);
         } else {
           reject(res);

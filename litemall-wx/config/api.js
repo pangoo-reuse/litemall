@@ -7,6 +7,7 @@ var WxApiRoot = 'http://192.168.23.11:8080/wx/';
 // var WxApiRoot = 'http://122.51.199.160:8080/wx/';
 // 云平台上线时使用
 // var WxApiRoot = 'https://www.menethil.com.cn/wx/';
+var MapUrl = 'https://apis.map.qq.com/ws/geocoder/v1/?location={latitude},{longitude}&key=DFVBZ-M5GKJ-5ZIFN-F36EH-TBBS5-WQFTU';
 
 module.exports = {
   IndexUrl: WxApiRoot + 'home/index', //首页数据接口
@@ -101,5 +102,5 @@ module.exports = {
   UserIndex: WxApiRoot + 'user/index', //个人页面用户相关信息
   IssueList: WxApiRoot + 'issue/list', //帮助信息
 
-  MatchArea: WxApiRoot + 'address/match', //匹配当前区信息
+  MapUrl: MapUrl
 };

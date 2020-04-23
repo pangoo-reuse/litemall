@@ -6,8 +6,17 @@ public class UserInfo {
     private String country;
     private String province;
     private String city;
+    private String referralCode;
     private String language;
     private Byte gender;
+
+    public String getReferralCode() {
+        return referralCode;
+    }
+
+    public void setReferralCode(String referralCode) {
+        this.referralCode = referralCode;
+    }
 
     public String getCountry() {
         return country;

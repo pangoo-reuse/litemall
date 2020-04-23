@@ -17,11 +17,11 @@ import org.linlinjava.litemall.db.service.CouponAssignService;
 import org.linlinjava.litemall.db.service.LitemallUserService;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.dto.UserInfo;
-import org.linlinjava.litemall.wx.dto.UserToken;
 import org.linlinjava.litemall.wx.dto.WxLoginInfo;
 import org.linlinjava.litemall.wx.service.CaptchaCodeManager;
 import org.linlinjava.litemall.wx.service.UserTokenManager;
 import org.linlinjava.litemall.core.util.IpUtil;
+import org.linlinjava.litemall.wx.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,7 @@ public class WxAuthController {
         UserInfo userInfo = new UserInfo();
         userInfo.setNickName(username);
         userInfo.setAvatarUrl(user.getAvatar());
+        userInfo.setReferralCode(user.getReferralCode());
 
         // token
         String token = UserTokenManager.generateToken(user.getId());
@@ -115,7 +117,7 @@ public class WxAuthController {
      * @return 登录结果
      */
     @PostMapping("login_by_weixin")
-    public Object loginByWeixin(@RequestBody WxLoginInfo wxLoginInfo, HttpServletRequest request) {
+    public Object loginByWeixin(@RequestBody WxLoginInfo wxLoginInfo, HttpServletRequest request) throws Exception {
         String code = wxLoginInfo.getCode();
         UserInfo userInfo = wxLoginInfo.getUserInfo();
         if (code == null || userInfo == null) {
@@ -150,6 +152,9 @@ public class WxAuthController {
             user.setLastLoginTime(LocalDateTime.now());
             user.setLastLoginIp(IpUtil.getIpAddr(request));
             user.setSessionKey(sessionKey);
+//            String referralCode = RandomUtil.randomTen();
+            user.setReferralCode(Base64.getEncoder().encodeToString(openId.getBytes("UTF-8")));
+            userInfo.setReferralCode(user.getReferralCode());
 
             userService.add(user);
 
@@ -159,6 +164,7 @@ public class WxAuthController {
             user.setLastLoginTime(LocalDateTime.now());
             user.setLastLoginIp(IpUtil.getIpAddr(request));
             user.setSessionKey(sessionKey);
+            userInfo.setReferralCode(user.getReferralCode());
             if (userService.updateById(user) == 0) {
                 return ResponseUtil.updatedDataFailed();
             }

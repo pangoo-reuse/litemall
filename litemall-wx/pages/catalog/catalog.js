@@ -61,7 +61,7 @@ Page({
   },
   onShow: function() {
     // 页面显示
-    app.getPermission(this);
+
   },
   onHide: function() {
     // 页面隐藏
