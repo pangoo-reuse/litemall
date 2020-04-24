@@ -19,7 +19,17 @@ page {
   font-size: 30rpx;
   color: #666;
 }
-
+.item-message {
+  padding-left: 31.25rpx;
+  padding-bottom: 12.5rpx;
+  line-height: 30rpx;
+  font-size: 30rpx;
+  color: #666666;
+}
+.item-message .message{
+  color: #868686;
+  font-size: 26rpx;
+}
 .item-c {
   margin-left: 31.25rpx;
   border-top: 1px solid #f4f4f4;

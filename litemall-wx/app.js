@@ -136,15 +136,9 @@ App({
     })
   },
   onShow: function (options) {
-    var that = this;
+
     user.checkLogin().then(res => {
       this.globalData.hasLogin = true;
-      wx.getStorage({
-        key: 'userInfo',
-        success(res) {
-          that.globalData.selfReferralCode = res.data.referralCode
-        },
-      })
     }).catch(() => {
       this.globalData.hasLogin = false;
     });
@@ -155,7 +149,6 @@ App({
     city: null,
     district: null,
     address: null,
-    othersReferralCode: null,
-    selfReferralCode: null
+    referralCode: null
   }
 })

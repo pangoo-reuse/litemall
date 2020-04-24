@@ -7,8 +7,11 @@ Page({
   data: {
     userInfo: {
       nickName: '点击登录',
+      id: 0,
       avatarUrl: '/static/images/my.png'
     },
+    available: 0.0,
+    total: 0.0,
     order: {
       unpaid: 0,
       unship: 0,
@@ -17,24 +20,27 @@ Page({
     },
     hasLogin: false
   },
-  onLoad: function(options) {
+  onLoad: function (options) {
     // 页面初始化 options为页面跳转所带来的参数
+    
   },
-  onReady: function() {
-
+  onReady: function () {
+    if (app.globalData.hasLogin){
+      this.calculateAlliance();
+    }
   },
-  onShow: function() {
+  onShow: function () {
 
     //获取用户的登录信息
     if (app.globalData.hasLogin) {
       let userInfo = wx.getStorageSync('userInfo');
       this.setData({
         userInfo: userInfo,
-        hasLogin: true
+        hasLogin: true,
       });
 
       let that = this;
-      util.request(api.UserIndex).then(function(res) {
+      util.request(api.UserIndex).then(function (res) {
         if (res.errno === 0) {
           that.setData({
             order: res.data.order
@@ -44,11 +50,11 @@ Page({
     }
 
   },
-  onHide: function() {
+  onHide: function () {
     // 页面隐藏
 
   },
-  onUnload: function() {
+  onUnload: function () {
     // 页面关闭
   },
   goLogin() {
@@ -85,9 +91,9 @@ Page({
       }
       wx.navigateTo({
         url: route,
-        success: function(res) {},
-        fail: function(res) {},
-        complete: function(res) {},
+        success: function (res) { },
+        fail: function (res) { },
+        complete: function (res) { },
       })
     } else {
       wx.navigateTo({
@@ -161,7 +167,7 @@ Page({
       });
     };
   },
-  bindPhoneNumber: function(e) {
+  bindPhoneNumber: function (e) {
     if (e.detail.errMsg !== "getPhoneNumber:ok") {
       // 拒绝授权
       return;
@@ -179,7 +185,7 @@ Page({
     util.request(api.AuthBindPhone, {
       iv: e.detail.iv,
       encryptedData: e.detail.encryptedData
-    }, 'POST').then(function(res) {
+    }, 'POST').then(function (res) {
       if (res.errno === 0) {
         wx.showToast({
           title: '绑定手机号码成功',
@@ -189,7 +195,7 @@ Page({
       }
     });
   },
-  goAfterSale: function() {
+  goAfterSale: function () {
     if (this.data.hasLogin) {
       wx.navigateTo({
         url: "/pages/ucenter/aftersaleList/aftersaleList"
@@ -200,7 +206,7 @@ Page({
       });
     };
   },
-  aboutUs: function() {
+  aboutUs: function () {
     wx.navigateTo({
       url: '/pages/about/about'
     });
@@ -209,13 +215,13 @@ Page({
     wx.navigateTo({
       url: '/pages/help/help'
     });
-  },  
-  exitLogin: function() {
+  },
+  exitLogin: function () {
     wx.showModal({
       title: '',
       confirmColor: '#b4282d',
       content: '退出登录？',
-      success: function(res) {
+      success: function (res) {
         if (!res.confirm) {
           return;
         }
@@ -230,5 +236,18 @@ Page({
       }
     })
 
+  },
+  calculateAlliance: function () {
+    var that = this;
+    util.request(api.calculateAlliance, {
+      userId: that.data.userInfo.id
+    }).then(function (res) {
+      if (res.errno === 0) {
+        that.setData({
+          available: res.data.available,
+          total: res.data.total
+        })
+      }
+    });
   }
 })

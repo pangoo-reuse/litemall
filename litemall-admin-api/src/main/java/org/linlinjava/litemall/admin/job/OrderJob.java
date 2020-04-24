@@ -31,6 +31,9 @@ public class OrderJob {
     private LitemallGrouponService grouponService;
     @Autowired
     private LitemallGrouponRulesService rulesService;
+    @Autowired
+    private ReferrerService referrerService;
+
 
     /**
      * 自动确认订单
@@ -56,6 +59,7 @@ public class OrderJob {
             } else {
                 logger.info("订单 ID=" + order.getId() + " 已经超期自动确认收货");
             }
+            referrerService.updateOrderAlliance(order);
         }
 
         logger.info("系统结束定时任务检查订单是否已经超期自动确认收货");

@@ -10,11 +10,25 @@ page {
   overflow: hidden;
   width: 100%;
 }
+.alliance-available {
+  background-color: #ab956d;
+  color: #eeb109;
+  align-items: center;
+  padding: 0 30rpx 0 0;
+  font-size: 24rpx;
+}
 
+.alliance-total {
+  background-color: #ab956d;
+  color: #443c2b;
+  align-items: center;
+  padding: 30rpx;
+  font-size: 24rpx;
+}
 .profile-info {
   background-color: #ab956d;
   color: #f4f4f4;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   padding: 30rpx;
   font-size: 28rpx;
@@ -28,7 +42,7 @@ page {
 
 .profile-info .info {
   flex: 1;
-  height: 85rpx;
+  height: 105rpx;
   padding-left: 31.25rpx;
 }
 
@@ -38,6 +52,12 @@ page {
   line-height: 45rpx;
   color: #fff;
   font-size: 37.5rpx;
+  margin-bottom: 10rpx;
+}
+.profile-info .name-holder {
+  display: block;
+  height: 22.5rpx;
+  line-height: 22.5rpx;
   margin-bottom: 10rpx;
 }
 

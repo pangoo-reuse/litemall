@@ -2,7 +2,7 @@
 	<view class="order-info">
 		<view class="item">下单时间：{{orderInfo.addTime}}</view>
 		<view class="item">订单编号：{{orderInfo.orderSn}}</view>
-		<view class="item">订单留言：{{orderInfo.message}}</view>
+		<view class="item-message">订单留言：<text class="message">{{orderInfo.message}}</text></view>
 		<view class="item-c">
 			<view class="l">实付：
 				<text class="cost">￥{{orderInfo.actualPrice}}</text>

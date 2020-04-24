@@ -93,7 +93,7 @@ public class WxGoodsController {
 	 *             that.globalData.district = district;
 	 */
 	@GetMapping("detail")
-	public Object detail(@LoginUser Integer userId, @NotNull Integer id,String province,String city,String district,String referralCode) {
+	public Object detail(@LoginUser Integer userId, @NotNull Integer id,String province,String city,String district) {
 		// 商品信息
 		LitemallGoods info = goodsService.findById(id);
 

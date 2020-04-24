@@ -109,6 +109,8 @@ public class WxOrderService {
     private LitemallAftersaleService aftersaleService;
     @Autowired
     private LitemallShippingConfigService shippingConfigService;
+    @Autowired
+    private ReferrerService referrerService;
 
     /**
      * 订单列表
@@ -597,7 +599,6 @@ public class WxOrderService {
             fee = actualPrice.multiply(new BigDecimal(100)).intValue();
             orderRequest.setTotalFee(fee);
             orderRequest.setSpbillCreateIp(IpUtil.getIpAddr(request));
-
             result = wxPayService.createOrder(orderRequest);
         } catch (Exception e) {
             e.printStackTrace();
@@ -868,6 +869,8 @@ public class WxOrderService {
         if (orderService.updateWithOptimisticLocker(order) == 0) {
             return ResponseUtil.updatedDateExpired();
         }
+        /*** 更新推广返现表*/
+        referrerService.updateOrderAlliance(order);
         return ResponseUtil.ok();
     }
 

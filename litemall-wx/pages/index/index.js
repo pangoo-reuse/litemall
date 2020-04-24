@@ -98,7 +98,7 @@ Page({
       //这个goodId的值存在则证明首页的开启来源于分享,同时可以通过获取到的goodId的值跳转导航到对应的详情页
       var referralCode = options.referralCode;
       console.log("referralCode:"+referralCode)
-      app.globalData.othersReferralCode = referralCode;
+      app.globalData.referralCode = referralCode;
       wx.navigateTo({
         url: '../goods/goods?id=' + options.goodId
       });

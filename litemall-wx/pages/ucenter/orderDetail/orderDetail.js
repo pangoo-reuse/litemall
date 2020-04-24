@@ -82,6 +82,8 @@ Page({
             console.log("支付过程结束")
           }
         });
+      }else{
+        util.showErrorToast(res.errmsg);
       }
     });
 

@@ -155,6 +155,7 @@ public class WxAuthController {
 //            String referralCode = RandomUtil.randomTen();
             user.setReferralCode(Base64.getEncoder().encodeToString(openId.getBytes("UTF-8")));
             userInfo.setReferralCode(user.getReferralCode());
+            userInfo.setId(user.getId());
 
             userService.add(user);
 
@@ -165,6 +166,7 @@ public class WxAuthController {
             user.setLastLoginIp(IpUtil.getIpAddr(request));
             user.setSessionKey(sessionKey);
             userInfo.setReferralCode(user.getReferralCode());
+            userInfo.setId(user.getId());
             if (userService.updateById(user) == 0) {
                 return ResponseUtil.updatedDataFailed();
             }

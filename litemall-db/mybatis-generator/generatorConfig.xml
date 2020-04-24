@@ -186,7 +186,10 @@
         <table tableName="litemall_shipping_config">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <table tableName="litemall_user_referral">
+        <table tableName="litemall_referral_views">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="litemall_referral_orders">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>

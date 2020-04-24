@@ -9,9 +9,18 @@ public class UserInfo {
     private String referralCode;
     private String language;
     private Byte gender;
+    private Integer id;
 
     public String getReferralCode() {
         return referralCode;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setReferralCode(String referralCode) {

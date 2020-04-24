@@ -31,6 +31,9 @@ Page({
     isGroupon: false, //标识是否是一个参团购买
     soldout: false,
     canWrite: false, //用户是否获取了保存相册的权限
+    selfReferralCode: '',
+    uid: 0,
+    viewTask:undefined
   },
 
   // 页面分享
@@ -39,7 +42,7 @@ Page({
     return {
       title: that.data.goods.name,
       desc: '购物有理，分享有礼',
-      path: '/pages/index/index?goodId=' + this.data.id +'&referralCode='+app.globalData.selfReferralCode
+      path: '/pages/index/index?goodId=' + that.data.id + '&referralCode=' + that.data.selfReferralCode
     }
   },
 
@@ -128,16 +131,11 @@ Page({
   // 获取商品信息
   getGoodsInfo: function () {
     let that = this;
-    var referralCode = '';
-    if(app.globalData.selfReferralCode != app.globalData.othersReferralCode){
-      referralCode = app.globalData.othersReferralCode;
-    }
     util.request(api.GoodsDetail, {
       id: that.data.id,
       province: app.globalData.province,
       city: app.globalData.city,
-      district: app.globalData.district,
-      referralCode: referralCode
+      district: app.globalData.district
     }).then(function (res) {
       if (res.errno === 0) {
 
@@ -414,6 +412,35 @@ Page({
   },
 
   onLoad: function (options) {
+    let that = this;
+    wx.getStorage({
+      key: 'userInfo',
+      success(res) {
+        that.setData({
+          selfReferralCode: res.data.referralCode,
+          uid: res.data.id
+        })
+      }
+    })
+
+
+   var viewTask = setTimeout(function () {
+      console.log("添加浏览访问:" + app.globalData.referralCode)
+      if (app.globalData.referralCode && that.data.selfReferralCode != app.globalData.referralCode) {
+        //String referrerCode, Integer viewerId, Integer goodsId
+        var referralCode = app.globalData.referralCode;
+        util.request(api.createViewAlliance, {
+          referrerCode: referralCode,
+          viewerId: that.data.uid,
+          goodsId: that.data.id
+
+        });
+      }
+
+    }, 10000);
+    this.setData({
+      viewTask: viewTask
+    });
     // 页面初始化 options为页面跳转所带来的参数
     if (options.id) {
       this.setData({
@@ -428,7 +455,7 @@ Page({
       });
       this.getGrouponInfo(options.grouponId);
     }
-    let that = this;
+
     wx.getSetting({
       success: function (res) {
         console.log(res)
@@ -630,7 +657,7 @@ Page({
   },
   onHide: function () {
     // 页面隐藏
-
+    clearTimeout(this.data.viewTask)
   },
   onUnload: function () {
     // 页面关闭
