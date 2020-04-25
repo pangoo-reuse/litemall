@@ -37,6 +37,18 @@ public class LitemallShippingConfigService {
         criteria.andRegionIdEqualTo(regionId);
         return shippingConfigMapper.selectOneByExample(example);
     }
+    /**
+     * 根据区域Code(zipCode)查询
+     *
+     * @param zipCodes
+     * @return
+     */
+    public LitemallShippingConfig queryByZipCodeIn(List<Integer> zipCodes) {
+        LitemallShippingConfigExample example = new LitemallShippingConfigExample();
+        LitemallShippingConfigExample.Criteria criteria = example.createCriteria();
+        criteria.andRegionCodeIn(zipCodes).andDeletedEqualTo(false);
+        return shippingConfigMapper.selectOneByExample(example);
+    }
 
 
     public List<LitemallShippingConfig> queryListByRegionName(String regionName) {

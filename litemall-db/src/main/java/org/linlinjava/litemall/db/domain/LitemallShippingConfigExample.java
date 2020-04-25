@@ -1,5 +1,6 @@
 package org.linlinjava.litemall.db.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -399,7 +400,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinEqualTo(Byte value) {
+        public Criteria andExpressFreightMinEqualTo(BigDecimal value) {
             addCriterion("express_freight_min =", value, "expressFreightMin");
             return (Criteria) this;
         }
@@ -415,7 +416,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinNotEqualTo(Byte value) {
+        public Criteria andExpressFreightMinNotEqualTo(BigDecimal value) {
             addCriterion("express_freight_min <>", value, "expressFreightMin");
             return (Criteria) this;
         }
@@ -431,7 +432,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinGreaterThan(Byte value) {
+        public Criteria andExpressFreightMinGreaterThan(BigDecimal value) {
             addCriterion("express_freight_min >", value, "expressFreightMin");
             return (Criteria) this;
         }
@@ -447,7 +448,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinGreaterThanOrEqualTo(Byte value) {
+        public Criteria andExpressFreightMinGreaterThanOrEqualTo(BigDecimal value) {
             addCriterion("express_freight_min >=", value, "expressFreightMin");
             return (Criteria) this;
         }
@@ -463,7 +464,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinLessThan(Byte value) {
+        public Criteria andExpressFreightMinLessThan(BigDecimal value) {
             addCriterion("express_freight_min <", value, "expressFreightMin");
             return (Criteria) this;
         }
@@ -479,7 +480,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinLessThanOrEqualTo(Byte value) {
+        public Criteria andExpressFreightMinLessThanOrEqualTo(BigDecimal value) {
             addCriterion("express_freight_min <=", value, "expressFreightMin");
             return (Criteria) this;
         }
@@ -495,22 +496,22 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinIn(List<Byte> values) {
+        public Criteria andExpressFreightMinIn(List<BigDecimal> values) {
             addCriterion("express_freight_min in", values, "expressFreightMin");
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinNotIn(List<Byte> values) {
+        public Criteria andExpressFreightMinNotIn(List<BigDecimal> values) {
             addCriterion("express_freight_min not in", values, "expressFreightMin");
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinBetween(Byte value1, Byte value2) {
+        public Criteria andExpressFreightMinBetween(BigDecimal value1, BigDecimal value2) {
             addCriterion("express_freight_min between", value1, value2, "expressFreightMin");
             return (Criteria) this;
         }
 
-        public Criteria andExpressFreightMinNotBetween(Byte value1, Byte value2) {
+        public Criteria andExpressFreightMinNotBetween(BigDecimal value1, BigDecimal value2) {
             addCriterion("express_freight_min not between", value1, value2, "expressFreightMin");
             return (Criteria) this;
         }
@@ -525,7 +526,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueEqualTo(Byte value) {
+        public Criteria andFreightValueEqualTo(BigDecimal value) {
             addCriterion("freight_value =", value, "freightValue");
             return (Criteria) this;
         }
@@ -541,7 +542,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueNotEqualTo(Byte value) {
+        public Criteria andFreightValueNotEqualTo(BigDecimal value) {
             addCriterion("freight_value <>", value, "freightValue");
             return (Criteria) this;
         }
@@ -557,7 +558,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueGreaterThan(Byte value) {
+        public Criteria andFreightValueGreaterThan(BigDecimal value) {
             addCriterion("freight_value >", value, "freightValue");
             return (Criteria) this;
         }
@@ -573,7 +574,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueGreaterThanOrEqualTo(Byte value) {
+        public Criteria andFreightValueGreaterThanOrEqualTo(BigDecimal value) {
             addCriterion("freight_value >=", value, "freightValue");
             return (Criteria) this;
         }
@@ -589,7 +590,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueLessThan(Byte value) {
+        public Criteria andFreightValueLessThan(BigDecimal value) {
             addCriterion("freight_value <", value, "freightValue");
             return (Criteria) this;
         }
@@ -605,7 +606,7 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueLessThanOrEqualTo(Byte value) {
+        public Criteria andFreightValueLessThanOrEqualTo(BigDecimal value) {
             addCriterion("freight_value <=", value, "freightValue");
             return (Criteria) this;
         }
@@ -621,22 +622,22 @@ public class LitemallShippingConfigExample {
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueIn(List<Byte> values) {
+        public Criteria andFreightValueIn(List<BigDecimal> values) {
             addCriterion("freight_value in", values, "freightValue");
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueNotIn(List<Byte> values) {
+        public Criteria andFreightValueNotIn(List<BigDecimal> values) {
             addCriterion("freight_value not in", values, "freightValue");
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueBetween(Byte value1, Byte value2) {
+        public Criteria andFreightValueBetween(BigDecimal value1, BigDecimal value2) {
             addCriterion("freight_value between", value1, value2, "freightValue");
             return (Criteria) this;
         }
 
-        public Criteria andFreightValueNotBetween(Byte value1, Byte value2) {
+        public Criteria andFreightValueNotBetween(BigDecimal value1, BigDecimal value2) {
             addCriterion("freight_value not between", value1, value2, "freightValue");
             return (Criteria) this;
         }

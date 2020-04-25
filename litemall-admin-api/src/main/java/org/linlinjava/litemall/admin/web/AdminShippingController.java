@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @RestController
@@ -24,11 +25,11 @@ public class AdminShippingController {
     private LitemallShippingConfigService shippingConfigService;
 
     private Object validate(LitemallShippingConfig shippingConfig) {
-        Byte expressFreightMin = shippingConfig.getExpressFreightMin();
-        Byte freightValue = shippingConfig.getFreightValue();
+        BigDecimal expressFreightMin = shippingConfig.getExpressFreightMin();
+        BigDecimal freightValue = shippingConfig.getFreightValue();
         Integer regionId = shippingConfig.getRegionId();
-        if ((expressFreightMin == null || expressFreightMin < 0)
-                && (freightValue == null || freightValue < 0)
+        if ((expressFreightMin == null || expressFreightMin.intValue() < 0)
+                && (freightValue == null || freightValue.intValue() < 0)
                 && (regionId == null || regionId < 0)
         ) {
             return ResponseUtil.badArgument();

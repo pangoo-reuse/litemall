@@ -359,8 +359,8 @@ public class WxOrderService {
         // 根据订单商品总价计算运费，满88则免运费，否则8元；
         BigDecimal freightPrice = new BigDecimal(0.00);
         if (shippingConfig != null) {
-            if (checkedGoodsPrice.compareTo(new BigDecimal(shippingConfig.getExpressFreightMin())) < 0) {
-                freightPrice = new BigDecimal(shippingConfig.getFreightValue());
+            if (checkedGoodsPrice.compareTo(shippingConfig.getExpressFreightMin()) < 0) {
+                freightPrice = shippingConfig.getFreightValue();
             }
         } else {
             if (checkedGoodsPrice.compareTo(SystemConfig.getFreightLimit()) < 0) {

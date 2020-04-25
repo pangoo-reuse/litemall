@@ -1,11 +1,14 @@
 DROP TABLE IF EXISTS `litemall_shipping_config`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `litemall_shipping_config`;
+/*!40101 SET @saved_cs_client = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `litemall_shipping_config`
 (
     `id`                  int(11)     NOT NULL AUTO_INCREMENT,
-    `express_freight_min` tinyint(3)           DEFAULT '1' COMMENT '满减最低消费',
-    `freight_value`       tinyint(3)           DEFAULT '1' COMMENT '不满所需运费',
+    `express_freight_min` decimal(10, 2) NOT NULL DEFAULT '19.90' COMMENT '满减最低消费19.9',
+    `freight_value`       decimal(10, 2) NOT NULL DEFAULT '9.90' COMMENT '不满所需运费9.9',
     `region_id`           int(11)     NOT NULL COMMENT '区域ID',
     `region_code`         int(11)     NOT NULL COMMENT '区域编号',
     `region_address`      varchar(63) NOT NULL DEFAULT '' COMMENT '显示的地址',
@@ -14,6 +17,7 @@ CREATE TABLE `litemall_shipping_config`
     `update_time`         datetime             DEFAULT NULL COMMENT '更新时间',
     `deleted`             tinyint(1)           DEFAULT '0' COMMENT '逻辑删除',
     PRIMARY KEY (`id`),
+    UNIQUE KEY `region_code` (`region_code`),
     KEY `enabled` (`enabled`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 4

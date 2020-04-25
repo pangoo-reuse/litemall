@@ -43,19 +43,19 @@ App({
         wx.request({
           url: url,
           success(res) {
-            var address = res.data.result.address_component
-            var province = address.province;
-            var city = address.city;
-            var district = address.district;
+            //"nation_code": "156",
+            // "adcode": "420115",
+            // "city_code": "156420100",
+            var info = res.data.result.ad_info
+            var regionCode = info.adcode;
+            var tmp = info.city_code;
+            var cityZipCode = tmp.substring(info.nation_code.length, tmp.length)
             //  "province": "湖北省",
             //   "city": "孝感市",
             //   "district": "孝南区",
-
-            that.globalData.address = province + city + district;
-            that.globalData.province = province;
-            that.globalData.city = city;
-            that.globalData.district = district;
-
+            console.log(info)
+            that.globalData.cityZipCode = cityZipCode;
+            that.globalData.regionCode = regionCode;
           }
         })
 
@@ -145,10 +145,8 @@ App({
   },
   globalData: {
     hasLogin: false,
-    province: null,
-    city: null,
-    district: null,
-    address: null,
+    regionCode: 0,
+    cityZipCode: 0,
     referralCode: null
   }
 })

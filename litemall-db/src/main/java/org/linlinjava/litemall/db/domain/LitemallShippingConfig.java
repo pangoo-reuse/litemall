@@ -1,5 +1,6 @@
 package org.linlinjava.litemall.db.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class LitemallShippingConfig {
      *
      * @mbg.generated
      */
-    private Byte expressFreightMin;
+    private BigDecimal expressFreightMin;
 
     /**
      *
@@ -46,7 +47,7 @@ public class LitemallShippingConfig {
      *
      * @mbg.generated
      */
-    private Byte freightValue;
+    private BigDecimal freightValue;
 
     /**
      *
@@ -143,7 +144,7 @@ public class LitemallShippingConfig {
      *
      * @mbg.generated
      */
-    public Byte getExpressFreightMin() {
+    public BigDecimal getExpressFreightMin() {
         return expressFreightMin;
     }
 
@@ -155,7 +156,7 @@ public class LitemallShippingConfig {
      *
      * @mbg.generated
      */
-    public void setExpressFreightMin(Byte expressFreightMin) {
+    public void setExpressFreightMin(BigDecimal expressFreightMin) {
         this.expressFreightMin = expressFreightMin;
     }
 
@@ -167,7 +168,7 @@ public class LitemallShippingConfig {
      *
      * @mbg.generated
      */
-    public Byte getFreightValue() {
+    public BigDecimal getFreightValue() {
         return freightValue;
     }
 
@@ -179,7 +180,7 @@ public class LitemallShippingConfig {
      *
      * @mbg.generated
      */
-    public void setFreightValue(Byte freightValue) {
+    public void setFreightValue(BigDecimal freightValue) {
         this.freightValue = freightValue;
     }
 
@@ -518,8 +519,8 @@ public class LitemallShippingConfig {
      */
     public enum Column {
         id("id", "id", "INTEGER", false),
-        expressFreightMin("express_freight_min", "expressFreightMin", "TINYINT", false),
-        freightValue("freight_value", "freightValue", "TINYINT", false),
+        expressFreightMin("express_freight_min", "expressFreightMin", "DECIMAL", false),
+        freightValue("freight_value", "freightValue", "DECIMAL", false),
         regionId("region_id", "regionId", "INTEGER", false),
         regionCode("region_code", "regionCode", "INTEGER", false),
         regionAddress("region_address", "regionAddress", "VARCHAR", false),

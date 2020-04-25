@@ -47,6 +47,8 @@ public class WxCartController {
     private CouponVerifyService couponVerifyService;
     @Autowired
     private LitemallShippingConfigService shippingConfigService;
+    @Autowired
+    private LitemallGrouponService grouponService;
 
     /**
      * 用户购物车信息
@@ -460,7 +462,8 @@ public class WxCartController {
                 checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
             }
         }
-
+        LitemallGroupon groupon  = new LitemallGroupon();
+        grouponService.createGroupon(groupon);
         // 计算优惠券可用情况
         BigDecimal tmpCouponPrice = new BigDecimal(0.00);
         Integer tmpCouponId = 0;
@@ -514,8 +517,8 @@ public class WxCartController {
         // 根据订单商品总价计算运费，满88则免运费，否则8元；
         BigDecimal freightPrice = new BigDecimal(0.00);
         if (shippingConfig != null) {
-            if (checkedGoodsPrice.compareTo(new BigDecimal(shippingConfig.getExpressFreightMin())) < 0) {
-                freightPrice = new BigDecimal(shippingConfig.getFreightValue());
+            if (checkedGoodsPrice.compareTo(shippingConfig.getExpressFreightMin()) < 0) {
+                freightPrice = shippingConfig.getFreightValue();
             }
         } else {
             if (checkedGoodsPrice.compareTo(SystemConfig.getFreightLimit()) < 0) {

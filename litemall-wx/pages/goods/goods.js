@@ -133,9 +133,8 @@ Page({
     let that = this;
     util.request(api.GoodsDetail, {
       id: that.data.id,
-      province: app.globalData.province,
-      city: app.globalData.city,
-      district: app.globalData.district
+      regionCode: app.globalData.regionCode,
+      cityZipCode: app.globalData.cityZipCode
     }).then(function (res) {
       if (res.errno === 0) {
 
@@ -173,6 +172,7 @@ Page({
           checkedSpecPrice: res.data.info.retailPrice,
           groupon: res.data.groupon,
           canShare: res.data.share,
+          shippingInfo: res.data.shippingInfo,
         });
 
         //如果是通过分享的团购参加团购，则团购项目应该与分享的一致并且不可更改
