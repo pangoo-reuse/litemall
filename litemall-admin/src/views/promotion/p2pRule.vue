@@ -3,9 +3,23 @@
 
     <!-- 查询和其他操作 -->
     <div class="filter-container">
-      <el-input v-model="listQuery.goodsId" clearable class="filter-item" style="width: 200px;" placeholder="请输入商品编号" />
-      <el-button v-permission="['GET /admin/groupon/list']" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
-      <el-button v-permission="['POST /admin/groupon/create']" class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
+      <el-input v-model="listQuery.goodsName" clearable class="filter-item" style="width: 200px;" placeholder="请输入商品名" />
+      <el-button
+        v-permission="['GET /admin/p2p/list']"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >查找
+      </el-button>
+      <el-button
+        v-permission="['POST /admin/p2p/create']"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >添加
+      </el-button>
       <el-button
         :loading="downloadLoading"
         class="filter-item"
@@ -18,7 +32,7 @@
 
     <!-- 查询结果 -->
     <el-table v-loading="listLoading" :data="list" element-loading-text="正在查询中。。。" border fit highlight-current-row>
-      <el-table-column align="center" label="团购规则ID" prop="id" />
+      <el-table-column align="center" label="团购ID" prop="id" />
 
       <el-table-column align="center" label="商品ID" prop="goodsId" />
 
@@ -30,22 +44,45 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="团购优惠" prop="discount" />
+      <el-table-column align="center" label="最大限制人数" prop="maxPersonCount" />
 
-      <el-table-column align="center" label="团购要求" prop="discountMember" />
+      <el-table-column align="center" label="团购商品基数" prop="goodsCount" />
 
-      <el-table-column align="center" label="状态" prop="status">
+      <el-table-column align="center" label="状态" prop="state">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status === 0 ? 'success' : 'error' ">{{ statusMap[scope.row.status] }}</el-tag>
+          <el-tag :type="scope.row.state === 0 ? 'success' : 'error' ">{{ scope.row.state ? '启用' : '不启用' }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="产品规则" prop="productRule">
+        <template slot-scope="scope">
+          <el-tag :type="'success'">{{ statusMap[scope.row.productRule] == 0 ? '固定总份数':'固定总人数' }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="发货规则" prop="shippingRule">
+        <template slot-scope="scope">
+          <el-tag :type="'success'">{{ statusMap[scope.row.shippingRule] == 0 ? '退差价':'补份数' }}</el-tag>
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="创建时间" prop="createdTime" />
       <el-table-column align="center" label="结束时间" prop="expireTime" />
 
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-permission="['POST /admin/groupon/update']" type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button v-permission="['POST /admin/groupon/delete']" type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            v-permission="['POST /admin/p2p/update']"
+            type="primary"
+            size="mini"
+            @click="handleUpdate(scope.row)"
+          >编辑
+          </el-button>
+          <el-button
+            v-permission="['POST /admin/p2p/delete']"
+            type="danger"
+            size="mini"
+            @click="handleDelete(scope.row)"
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -62,14 +99,28 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="商品ID" prop="goodsId">
-          <el-input v-model="dataForm.goodsId" />
+          <el-input v-model="dataForm.goodsId" :disabled="isEditable" />
         </el-form-item>
-        <el-form-item label="团购折扣" prop="discount">
-          <el-input v-model="dataForm.discount" />
+        <el-form-item label="最大限制人数" prop="maxPersonCount">
+          <el-input v-model="dataForm.maxPersonCount" />
         </el-form-item>
-        <el-form-item label="团购人数要求" prop="discountMember">
-          <el-input v-model="dataForm.discountMember" />
+        <el-form-item label="团购商品基数" prop="goodsCount">
+          <el-input v-model="dataForm.goodsCount" />
         </el-form-item>
+
+        <el-form-item label="产品规则" prop="productRule">
+          <el-select v-model="dataForm.productRule" placeholder="请选择">
+            <el-option :value="0" label="固定总份数" />
+            <el-option :value="1" label="固定总人数" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="发货规则" prop="shippingRule">
+          <el-select v-model="dataForm.shippingRule" placeholder="请选择">
+            <el-option :value="0" label="退差价" />
+            <el-option :value="1" label="补份数" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="过期时间" prop="expireTime">
           <el-date-picker
             v-model="dataForm.expireTime"
@@ -78,15 +129,27 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           />
         </el-form-item>
+        <el-form-item label="是否启用" prop="enabled">
+          <el-select v-model="dataForm.state" placeholder="请选择">
+            <el-option :value="true" label="启用" />
+            <el-option :value="false" label="不启用" />
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">确定</el-button>
-        <el-button v-else type="primary" @click="updateData">确定</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createRule">确定</el-button>
+        <el-button v-else type="primary" @click="updateRule">确定</el-button>
       </div>
     </el-dialog>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
 
     <el-tooltip placement="top" content="返回顶部">
       <back-to-top :visibility-height="100" />
@@ -96,12 +159,12 @@
 </template>
 
 <script>
-import { listGroupon, publishGroupon, deleteGroupon, editGroupon } from '@/api/groupon'
+import { editRule, listRules, deleteRule, createRule } from '@/api/p2p'
 import BackToTop from '@/components/BackToTop'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
-  name: 'GrouponRule',
+  name: 'P2pRule',
   components: { BackToTop, Pagination },
   data() {
     return {
@@ -111,20 +174,24 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        goodsId: undefined,
-        sort: 'add_time',
+        goodsName: undefined,
+        sort: 'created_time',
         order: 'desc'
       },
       downloadLoading: false,
       dataForm: {
         id: undefined,
         goodsId: '',
-        discount: '',
-        discountMember: '',
+        maxPersonCount: 0,
+        goodsCount: 0,
+        productRule: 0,
+        shippingRule: 0,
+        state: true,
         expireTime: undefined
       },
       dialogFormVisible: false,
       dialogStatus: '',
+      isEditable: false,
       textMap: {
         update: '编辑',
         create: '创建'
@@ -136,9 +203,11 @@ export default {
       ],
       rules: {
         goodsId: [{ required: true, message: '商品不能为空', trigger: 'blur' }],
-        discount: [{ required: true, message: '团购折扣不能为空', trigger: 'blur' }],
-        discountMember: [{ required: true, message: '团购人数不能为空', trigger: 'blur' }],
-        expireTime: [{ required: true, message: '过期时间不能为空', trigger: 'blur' }]
+        maxPersonCount: [{ required: true, message: '最大限制人数大于0', trigger: 'blur' }],
+        goodsCount: [{ required: true, message: '团购商品基数大于0', trigger: 'blur' }],
+        expireTime: [{ required: true, message: '过期时间不能为空', trigger: 'blur' }],
+        shippingRule: [{ required: true, message: '发货规则必选', trigger: 'blur' }],
+        productRule: [{ required: true, message: '产品规则必选', trigger: 'blur' }]
       }
     }
   },
@@ -148,7 +217,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      listGroupon(this.listQuery).then(response => {
+      listRules(this.listQuery).then(response => {
         this.list = response.data.data.list
         this.total = response.data.data.total
         this.listLoading = false
@@ -174,15 +243,16 @@ export default {
     handleCreate() {
       this.resetForm()
       this.dialogStatus = 'create'
+      this.isEditable = false
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
+    createRule() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          publishGroupon(this.dataForm).then(response => {
+          createRule(this.dataForm).then(response => {
             this.list.unshift(response.data.data)
             this.dialogFormVisible = false
             this.$notify.success({
@@ -201,15 +271,16 @@ export default {
     handleUpdate(row) {
       this.dataForm = Object.assign({}, row)
       this.dialogStatus = 'update'
+      this.isEditable = true
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData() {
+    updateRule() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          editGroupon(this.dataForm).then(() => {
+          editRule(this.dataForm).then(() => {
             for (const v of this.list) {
               if (v.id === this.dataForm.id) {
                 const index = this.list.indexOf(v)
@@ -232,7 +303,7 @@ export default {
       })
     },
     handleDelete(row) {
-      deleteGroupon(row).then(response => {
+      deleteRule(row).then(response => {
         this.$notify.success({
           title: '成功',
           message: '删除团购规则成功'
@@ -248,12 +319,12 @@ export default {
     },
     handleDownload() {
       this.downloadLoading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['商品ID', '名称', '首页主图', '折扣', '人数要求', '活动开始时间', '活动结束时间']
-          const filterVal = ['id', 'name', 'pic_url', 'discount', 'discountMember', 'addTime', 'expireTime']
-          excel.export_json_to_excel2(tHeader, this.list, filterVal, '商品信息')
-          this.downloadLoading = false
-        })
+                import('@/vendor/Export2Excel').then(excel => {
+                  const tHeader = ['商品ID', '名称', '首页主图', '折扣', '人数要求', '活动开始时间', '活动结束时间']
+                  const filterVal = ['id', 'name', 'pic_url', 'discount', 'discountMember', 'addTime', 'expireTime']
+                  excel.export_json_to_excel2(tHeader, this.list, filterVal, '商品信息')
+                  this.downloadLoading = false
+                })
     }
   }
 }

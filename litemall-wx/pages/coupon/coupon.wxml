@@ -5,7 +5,7 @@
       <view class="tag">{{item.tag}}</view>
       <view class="content">
         <view class="left">
-          <view class="discount">{{item.discount}}元</view>
+          <view class="discount">{{item.maxPersonCount}}元</view>
           <view class="min"> 满{{item.min}}元使用</view>
         </view>
         <view class="right">

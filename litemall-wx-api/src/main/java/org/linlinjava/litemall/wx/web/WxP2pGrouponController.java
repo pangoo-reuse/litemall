@@ -11,8 +11,9 @@ import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.db.util.OrderUtil;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
-import org.linlinjava.litemall.wx.service.WxGrouponRuleService;
+import org.linlinjava.litemall.wx.service.WxP2pGrouponRuleService;
 import org.linlinjava.litemall.wx.vo.GrouponRuleVo;
+import org.linlinjava.litemall.wx.vo.P2pRuleVa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,13 +37,13 @@ import static org.linlinjava.litemall.wx.util.WxResponseCode.*;
 @RestController
 @RequestMapping("/wx/groupon")
 @Validated
-public class WxGrouponController {
-    private final Log logger = LogFactory.getLog(WxGrouponController.class);
+public class WxP2pGrouponController {
+    private final Log logger = LogFactory.getLog(WxP2pGrouponController.class);
 
     @Autowired
     private LitemallGrouponRulesService rulesService;
     @Autowired
-    private WxGrouponRuleService wxGrouponRuleService;
+    private WxP2pGrouponRuleService wxGrouponRuleService;
     @Autowired
     private LitemallGrouponService grouponService;
     @Autowired
@@ -70,8 +71,8 @@ public class WxGrouponController {
                        @RequestParam(defaultValue = "10") Integer limit,
                        @Sort @RequestParam(defaultValue = "add_time") String sort,
                        @Order @RequestParam(defaultValue = "desc") String order) {
-        List<GrouponRuleVo> grouponRuleVoList = wxGrouponRuleService.queryList(page, limit, sort, order);
-        return ResponseUtil.okList(grouponRuleVoList);
+        List<P2pRuleVa> litemallP2pRules = wxGrouponRuleService.queryList(page, limit, sort, order);
+        return ResponseUtil.okList(litemallP2pRules);
     }
 
     /**

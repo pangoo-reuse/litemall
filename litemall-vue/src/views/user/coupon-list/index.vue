@@ -20,7 +20,7 @@
                 <div class="van-coupon-item__head">
                   <h2>
                     <span>¥</span>
-                    {{coupon.discount}} 元
+                      {{coupon.maxPersonCount}} 元
                   </h2>
                   <p>{{coupon.desc }} - {{coupon.tag}}</p>
                 </div>

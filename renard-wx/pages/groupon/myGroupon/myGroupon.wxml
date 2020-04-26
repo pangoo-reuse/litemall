@@ -21,7 +21,7 @@
         <view class="r">{{item.orderStatusText}}</view>
       </view>
       <view class="j">
-        <view class="l">团购立减：￥{{item.rules.discount}}</view>
+        <view class="l">团购立减：￥{{item.rules.maxPersonCount}}</view>
         <view class="r">参与时间：{{item.groupon.addTime}}</view>
       </view>
       <view class="i">

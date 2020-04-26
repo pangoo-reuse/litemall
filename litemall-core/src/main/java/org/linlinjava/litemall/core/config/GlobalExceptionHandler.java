@@ -72,4 +72,10 @@ public class GlobalExceptionHandler {
         logger.error(e.getMessage(), e);
         return ResponseUtil.serious();
     }
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseBody
+    public Object globalExceptionHandler(Exception e) {
+        logger.error(e.getMessage(), e);
+        return ResponseUtil.fail(4008,e.getMessage());
+    }
 }

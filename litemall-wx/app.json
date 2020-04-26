@@ -99,6 +99,7 @@
     "van-row": "./lib/vant-weapp/row/index",
     "van-col": "./lib/vant-weapp/col/index",
     "van-image": "./lib/vant-weapp/image/index",
+    "van-count-down": "./lib/vant-weapp/count-down/index",
     "van-cell-group": "./lib/vant-weapp/cell-group/index",
     "van-picker": "./lib/vant-weapp/picker/index",
     "van-popup": "./lib/vant-weapp/popup/index",

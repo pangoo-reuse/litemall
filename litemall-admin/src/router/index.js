@@ -364,22 +364,22 @@ export const asyncRouterMap = [
         hidden: true
       },
       {
-        path: 'groupon-rule',
-        component: () => import('@/views/promotion/grouponRule'),
-        name: 'grouponRule',
+        path: 'p2p-rule',
+        component: () => import('@/views/promotion/p2pRule'),
+        name: 'p2pRule',
         meta: {
-          perms: ['GET /admin/groupon/list', 'POST /admin/groupon/create', 'POST /admin/groupon/update', 'POST /admin/groupon/delete'],
-          title: '团购规则',
+          perms: ['GET /admin/p2p/list', 'POST /admin/p2p/create', 'POST /admin/p2p/update', 'POST /admin/p2p/delete'],
+          title: 'P团规则',
           noCache: true
         }
       },
       {
-        path: 'groupon-activity',
-        component: () => import('@/views/promotion/grouponActivity'),
+        path: 'p2p-orders',
+        component: () => import('@/views/promotion/p2pOrders'),
         name: 'grouponActivity',
         meta: {
-          perms: ['GET /admin/groupon/listRecord'],
-          title: '团购活动',
+          perms: ['GET /admin/p2p/orderList'],
+          title: 'P团订单',
           noCache: true
         }
       }

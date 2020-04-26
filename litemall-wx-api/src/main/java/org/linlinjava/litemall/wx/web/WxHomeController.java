@@ -9,7 +9,7 @@ import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.service.HomeCacheManager;
-import org.linlinjava.litemall.wx.service.WxGrouponRuleService;
+import org.linlinjava.litemall.wx.service.WxP2pGrouponRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +48,7 @@ public class WxHomeController {
     private LitemallCategoryService categoryService;
 
     @Autowired
-    private WxGrouponRuleService grouponService;
+    private WxP2pGrouponRuleService p2pGrouponRuleService;
 
     @Autowired
     private LitemallCouponService couponService;
@@ -104,7 +104,7 @@ public class WxHomeController {
         Callable<List> topicListCallable = () -> topicService.queryList(0, SystemConfig.getTopicLimit());
 
         //团购专区
-        Callable<List> grouponListCallable = () -> grouponService.queryList(0, 5);
+        Callable<List> grouponListCallable = () -> p2pGrouponRuleService.queryList(0, 5);
 
         Callable<List> floorGoodsListCallable = this::getCategoryList;
 
