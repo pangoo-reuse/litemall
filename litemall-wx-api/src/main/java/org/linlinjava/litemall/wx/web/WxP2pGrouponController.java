@@ -69,7 +69,7 @@ public class WxP2pGrouponController {
     @GetMapping("list")
     public Object list(@RequestParam(defaultValue = "1") Integer page,
                        @RequestParam(defaultValue = "10") Integer limit,
-                       @Sort @RequestParam(defaultValue = "add_time") String sort,
+                       @Sort(accepts = "created_time") @RequestParam(defaultValue = "created_time") String sort,
                        @Order @RequestParam(defaultValue = "desc") String order) {
         List<P2pRuleVa> litemallP2pRules = wxGrouponRuleService.queryList(page, limit, sort, order);
         return ResponseUtil.okList(litemallP2pRules);

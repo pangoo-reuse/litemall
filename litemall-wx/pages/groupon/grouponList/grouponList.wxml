@@ -1,31 +1,40 @@
 <view class="container">
-  <scroll-view class="groupon-list" scroll-y="true" scroll-top="{{scrollTop}}">
+	<scroll-view class="groupon-list" scroll-y="true" scroll-top="{{scrollTop}}">
 
-    <view class="item" wx:for="{{grouponList}}" wx:for-index="index" wx:for-item="item" wx:key="id">
-      <navigator url="/pages/goods/goods?id={{item.id}}">
-        <image class="img" src="{{item.picUrl}}" background-size="cover"></image>
-        <view class="right">
-          <view class="text">
-            <view class="header">
-              <text class="name">{{item.name}}</text>
-              <van-tag type="primary">{{item.grouponMember}}人成团</van-tag>
-            </view>
-            <view class="expire">
-              <van-tag round type="warning">有效期至 {{item.expireTime}}</van-tag>
-            </view>            
-            <text class="desc">{{item.brief}}</text>
-            <view class="price">
-              <view class="counterPrice">现价：￥{{item.retailPrice}}</view>
-              <view class="retailPrice">团购价：￥{{item.grouponPrice}}</view>
-            </view>
-          </view>
-        </view>
-      </navigator>
-    </view>
+		<view class="item" wx:for="{{grouponList}}" wx:for-index="index" wx:for-item="item" wx:key="id">
+			<navigator url="/pages/goods/goods?id={{item.goodsId}}&grouponId={{item.id}}">
+				<custom-flex main="around" cross="center">
+					<view>
+						<image class="img" lazy-load fit="contain" src="{{item.picUrl}}" />
+						<text class="tag">限</text>
+					</view>
+					<van-col>
+						<van-row>
+							<text class="name">{{item.goodsName}}</text>
+						</van-row>
+						<van-row>
+							<text class="desc">{{item.brief}}</text>
+						</van-row>
+						<van-row>
+							<text class="ava">当前均价￥{{item.avaPrice}}</text>
+						</van-row>
+						<van-row>
+							<custom-flex cross="center" main='between'>
+								<van-tag size='medium' text-color type="warning">
+									<van-count-down time="{{ item.time }}" format="DD天HH时mm分ss秒" />
+								</van-tag>
+								<view class="retailPrice">闪购价 ￥{{item.price}}</view>
+							</custom-flex>
 
-    <view class="page" wx:if="{{showPage}}">
-      <view class="prev {{ page <= 1 ? 'disabled' : ''}}" bindtap="prevPage">上一页</view>
-      <view class="next {{ (count / limit) < page ? 'disabled' : ''}}" bindtap="nextPage">下一页</view>
-    </view>
-  </scroll-view>
+						</van-row>
+					</van-col>
+				</custom-flex>
+			</navigator>
+		</view>
+
+		<view class="page" wx:if="{{showPage}}">
+			<view class="prev {{ page <= 1 ? 'disabled' : ''}}" bindtap="prevPage">上一页</view>
+			<view class="next {{ (count / limit) < page ? 'disabled' : ''}}" bindtap="nextPage">下一页</view>
+		</view>
+	</scroll-view>
 </view>

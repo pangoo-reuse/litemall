@@ -72,7 +72,7 @@ public class WxGoodsController {
     private LitemallGoodsSpecificationService goodsSpecificationService;
 
     @Autowired
-    private LitemallGrouponRulesService rulesService;
+    private LitemallP2pService litemallP2pService;
     @Autowired
     private LitemallShippingConfigService shippingConfigService;
 
@@ -98,7 +98,7 @@ public class WxGoodsController {
     @GetMapping("detail")
     public Object detail(@LoginUser Integer userId, @NotNull Integer id, @NotNull String regionCode/*zipCode*/, @NotNull String cityZipCode) {
         // 商品信息
-        LitemallGoods info = goodsService.findById(id);
+        LitemallGoods goods = goodsService.findById(id);
 
         // 商品属性
         Callable<List> goodsAttributeListCallable = () -> goodsAttributeService.queryByGid(id);
@@ -115,12 +115,12 @@ public class WxGoodsController {
 
         // 商品品牌商
         Callable<LitemallBrand> brandCallable = () -> {
-            Integer brandId = info.getBrandId();
+            Integer brandId = goods.getBrandId();
             LitemallBrand brand;
             if (brandId == 0) {
                 brand = new LitemallBrand();
             } else {
-                brand = brandService.findById(info.getBrandId());
+                brand = brandService.findById(goods.getBrandId());
             }
             return brand;
         };
@@ -149,8 +149,8 @@ public class WxGoodsController {
             return commentList;
         };
 
-        //团购信息
-        Callable<List> grouponRulesCallable = () -> rulesService.queryByGoodsId(id);
+        //闪购信息
+        Callable<LitemallP2pRule> p2pRulesCallable = () -> litemallP2pService.queryByGoodsId(id);
 
         // 用户收藏
         int userHasCollect = 0;
@@ -173,7 +173,7 @@ public class WxGoodsController {
         FutureTask<List> issueCallableTask = new FutureTask<>(issueCallable);
         FutureTask<Map> commentsCallableTsk = new FutureTask<>(commentsCallable);
         FutureTask<LitemallBrand> brandCallableTask = new FutureTask<>(brandCallable);
-        FutureTask<List> grouponRulesCallableTask = new FutureTask<>(grouponRulesCallable);
+        FutureTask<LitemallP2pRule> p2pRuleTask = new FutureTask<LitemallP2pRule>(p2pRulesCallable);
 
         executorService.submit(goodsAttributeListTask);
         executorService.submit(objectCallableTask);
@@ -181,7 +181,7 @@ public class WxGoodsController {
         executorService.submit(issueCallableTask);
         executorService.submit(commentsCallableTsk);
         executorService.submit(brandCallableTask);
-        executorService.submit(grouponRulesCallableTask);
+        executorService.submit(p2pRuleTask);
 
         Map<String, Object> data = new HashMap<>();
 
@@ -203,7 +203,7 @@ public class WxGoodsController {
                 freightValue = SystemConfig.getFreight();
             }
 
-            data.put("info", info);
+            data.put("info", goods);
             data.put("userHasCollect", userHasCollect);
             data.put("issue", issueCallableTask.get());
             HashMap<String, Object> shippingInfo = new HashMap<>();
@@ -215,7 +215,7 @@ public class WxGoodsController {
             data.put("productList", productListCallableTask.get());
             data.put("attribute", goodsAttributeListTask.get());
             data.put("brand", brandCallableTask.get());
-            data.put("groupon", grouponRulesCallableTask.get());
+            data.put("groupon", p2pRuleTask.get());
             //SystemConfig.isAutoCreateShareImage()
             data.put("share", SystemConfig.isAutoCreateShareImage());
 
@@ -224,7 +224,7 @@ public class WxGoodsController {
         }
 
         //商品分享图片地址
-        data.put("shareImage", info.getShareUrl());
+        data.put("shareImage", goods.getShareUrl());
         return ResponseUtil.ok(data);
     }
 

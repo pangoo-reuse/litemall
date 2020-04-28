@@ -2,7 +2,8 @@
   width: 750rpx;
   height: 417rpx;
 }
-.count-down{
+
+.count-down {
   font-size: 20rpx !important;
   text-align: center !important;
   margin-right: 12rpx;
@@ -10,6 +11,7 @@
   line-height: auto !important;
 
 }
+
 .banner image {
   width: 100%;
   height: 417rpx;
@@ -104,7 +106,8 @@
   color: #fff;
 }
 
-.a-brand .mt .price, .a-brand .mt .unit {
+.a-brand .mt .price,
+.a-brand .mt .unit {
   font-size: 25rpx;
   color: #fff;
 }
@@ -188,6 +191,7 @@
   font-size: 44rpx;
   color: #fff;
   margin-bottom: 14rpx;
+
 }
 
 .a-coupon .b .desc {
@@ -205,21 +209,42 @@
   width: 750rpx;
   height: auto;
   overflow: hidden;
+
 }
 
 .a-groupon .b .item {
-  border-top: 1px solid #d9d9d9;
+  border-top: 1rpx solid #e9e9e9;
   margin: 0 20rpx;
   height: 244rpx;
   width: 710rpx;
 }
 
 .a-groupon .b .img {
-  margin-top: 12rpx;
+  margin-top: 1rpx;
+  margin-bottom: 1rpx;
   margin-right: 12rpx;
   float: left;
-  width: 220rpx;
-  height: 220rpx;
+  width: 240rpx;
+  height: 240rpx;
+  background-color: #fcfcfc;
+
+}
+.a-groupon .ava {
+  color: #d6ac50;
+  font-size: 25rpx;
+  margin-right: 18rpx;
+}
+
+.a-groupon .b .tag {
+  position: absolute;
+  left: 20rpx;
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  border-radius: 0 1rpx 1rpx 0;
+  border-color: #e3bf79;
+  background-color: #e3bf79;
+  border-style: solid;
+  color: whitesmoke;
 }
 
 .a-groupon .b .right {
@@ -244,8 +269,11 @@
   float: left;
   display: block;
   color: #333;
-  line-height: 50rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 30rpx;
+
 }
 
 .a-groupon .b .desc {
@@ -510,6 +538,7 @@
   align-items: center;
   justify-content: center;
 }
+
 .search {
   height: 88rpx;
   width: 100%;

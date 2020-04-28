@@ -66,27 +66,34 @@
 		</view>
 		<view class="b">
 			<view class="item" wx:for="{{groupons}}" wx:for-index="index" wx:for-item="item" wx:key="id">
-				<navigator url="/pages/goods/goods?id={{item.goodsId}}">
-					<image class="img" src="{{item.picUrl}}" background-size="cover"></image>
-					<view class="right">
-						<view class="text">
-							<view class="header">
-								<text class="name">{{item.goodsName}}</text>
-								<van-tag type="primary" text-color size='medium'>
-									限量{{item.goodsCount}}份</van-tag>
-							</view>
-							<text class="desc">{{item.brief}}</text>
-							<view class="price">
-								<view class="retailPrice">闪购价 ￥{{item.goodsPrice}}</view>
-
-								<van-tag mark size='medium' text-color type="warning">
-									<view class="count-down">剩余</view>
-									<van-count-down time="{{ item.time }}" format="DD天HH时mm分ss秒" />
-								</van-tag>
-
-							</view>
+				<navigator url="/pages/goods/goods?id={{item.goodsId}}&grouponId={{item.id}}">
+					<custom-flex main="around" cross="center">
+						<view>
+							<image class="img" lazy-load fit="contain" src="{{item.picUrl}}" />
+							<text class="tag">限</text>
 						</view>
-					</view>
+						<van-col>
+							<van-row>
+								<text class="name">{{item.goodsName}}</text>
+							</van-row>
+							<van-row>
+								<text class="desc">{{item.brief}}</text>
+							</van-row>
+							<van-row>
+								<view class="retailPrice">闪购价 ￥{{item.price}}</view>
+
+							</van-row>
+							<van-row>
+								<custom-flex cross="center" main='between'>
+									<van-tag size='medium' text-color type="warning">
+										<van-count-down time="{{ item.time }}" format="DD天HH时mm分ss秒" />
+									</van-tag>
+									<text class="ava">已售:{{item.saleCount}}</text>
+								</custom-flex>
+
+							</van-row>
+						</van-col>
+					</custom-flex>
 				</navigator>
 			</view>
 		</view>

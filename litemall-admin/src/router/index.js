@@ -369,7 +369,7 @@ export const asyncRouterMap = [
         name: 'p2pRule',
         meta: {
           perms: ['GET /admin/p2p/list', 'POST /admin/p2p/create', 'POST /admin/p2p/update', 'POST /admin/p2p/delete'],
-          title: 'P团规则',
+          title: '闪购规则',
           noCache: true
         }
       },
@@ -379,7 +379,7 @@ export const asyncRouterMap = [
         name: 'grouponActivity',
         meta: {
           perms: ['GET /admin/p2p/orderList'],
-          title: 'P团订单',
+          title: '闪购订单',
           noCache: true
         }
       }

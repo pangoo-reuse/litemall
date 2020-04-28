@@ -7,6 +7,20 @@ export function listOrders(query) {
     params: query
   })
 }
+export function queryGoods(query) {
+  return request({
+    url: '/p2p/queryGoods',
+    method: 'get',
+    params: query
+  })
+}
+export function queryGoodsProduct(query) {
+  return request({
+    url: '/p2p/queryGoodsProduct',
+    method: 'get',
+    params: query
+  })
+}
 
 export function listRules(query) {
   return request({
@@ -15,6 +29,7 @@ export function listRules(query) {
     params: query
   })
 }
+
 
 export function deleteRule(data) {
   return request({

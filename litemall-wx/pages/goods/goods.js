@@ -10,7 +10,6 @@ Page({
     id: 0,
     goods: {},
     groupon: [], //该商品支持的团购规格
-    grouponLink: {}, //参与的团购
     attribute: [],
     issueList: [],
     comment: [],
@@ -28,7 +27,7 @@ Page({
     openShare: false,
     collect: false,
     shareImage: '',
-    isGroupon: false, //标识是否是一个参团购买
+    isP2P: false, //标识是否是一个闪购
     soldout: false,
     canWrite: false, //用户是否获取了保存相册的权限
     selfReferralCode: '',
@@ -176,19 +175,12 @@ Page({
         });
 
         //如果是通过分享的团购参加团购，则团购项目应该与分享的一致并且不可更改
-        if (that.data.isGroupon) {
+        if (that.data.isP2P) {
           let groupons = that.data.groupon;
-          for (var i = 0; i < groupons.length; i++) {
-            if (groupons[i].id != that.data.grouponLink.rulesId) {
-              groupons.splice(i, 1);
-            }
-          }
-          groupons[0].checked = true;
-          //重设团购规格
+          console.log(res.data)
           that.setData({
             groupon: groupons
           });
-
         }
 
         if (res.data.userHasCollect == 1) {
@@ -227,7 +219,7 @@ Page({
     let that = this;
 
     //参与团购，不可更改选择
-    if (that.data.isGroupon) {
+    if (that.data.isP2P) {
       return;
     }
 
@@ -451,7 +443,7 @@ Page({
 
     if (options.grouponId) {
       this.setData({
-        isGroupon: true,
+        isP2P: true,
       });
       this.getGrouponInfo(options.grouponId);
     }

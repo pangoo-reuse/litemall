@@ -1,13 +1,22 @@
 package org.linlinjava.litemall.wx.vo;
 
-import org.linlinjava.litemall.db.domain.LitemallP2pRules;
+import org.linlinjava.litemall.db.domain.LitemallP2pRule;
 
 import java.math.BigDecimal;
 
-public class P2pRuleVa extends LitemallP2pRules {
+public class P2pRuleVa extends LitemallP2pRule {
     private long time;
     private BigDecimal price;
     private String brief;
+    private Long saleCount;
+
+    public Long getSaleCount() {
+        return saleCount;
+    }
+
+    public void setSaleCount(Long saleCount) {
+        this.saleCount = saleCount;
+    }
 
     public String getBrief() {
         return brief;

@@ -129,7 +129,7 @@
 }
 
 .goods-info .brand text {
-  display: inline-block;
+  display: inline-block; 
   width: auto;
   padding: 2px 30rpx 2px 10.5rpx;
   line-height: 35.5rpx;
@@ -641,7 +641,15 @@
   text-align: center;
   color: #fff;
 }
-
+.bottom-btn .n {
+  float: left;
+  background: #e4e1e1;
+  height: 100rpx;
+  line-height: 96rpx;
+  flex: 1;
+  text-align: center;
+  color: #fff;
+}
 .bottom-btn .r {
   border: 1px solid #f48f18;
   background: #f48f18;

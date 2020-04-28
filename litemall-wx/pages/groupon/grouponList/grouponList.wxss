@@ -1,4 +1,5 @@
-page, .container {
+page,
+.container {
   width: 750rpx;
   height: 100%;
   overflow: hidden;
@@ -10,6 +11,7 @@ page, .container {
   height: 100%;
   overflow: hidden;
   background: #f4f4f4;
+
 }
 
 .groupon-list .item {
@@ -17,14 +19,30 @@ page, .container {
   width: 100%;
   background: #fff;
   margin-bottom: 20rpx;
+
 }
 
 .groupon-list .img {
-  margin-top: 12rpx;
+  /* margin-top: 12rpx; */
   margin-right: 12rpx;
   float: left;
-  width: 220rpx;
-  height: 220rpx;
+  width: 244rpx;
+  height: 244rpx;
+  background-color: #fcfcfc;
+}
+
+.groupon-list .item .tag {
+  position: absolute;
+  left: 6rpx;
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  border-radius: 0 1rpx 1rpx 0;
+  border-color: #e3bf79;
+  background-color: #e3bf79;
+  border-style: solid;
+  color: whitesmoke;
+ 
+
 }
 
 .groupon-list .right {
@@ -60,7 +78,12 @@ page, .container {
   line-height: 50rpx;
   font-size: 25rpx;
 }
+.groupon-list .ava {
 
+  color: rgb(235, 204, 104);
+  line-height: 50rpx;
+  font-size: 25rpx;
+}
 .groupon-list .price {
   width: 476rpx;
   display: flex;
@@ -79,6 +102,7 @@ page, .container {
   margin-left: 30rpx;
   font-size: 28rpx;
   color: #a78845;
+  margin-right: 20rpx;
 }
 
 .page {
