@@ -30,7 +30,6 @@ export function listRules(query) {
   })
 }
 
-
 export function deleteRule(data) {
   return request({
     url: '/p2p/delete',
