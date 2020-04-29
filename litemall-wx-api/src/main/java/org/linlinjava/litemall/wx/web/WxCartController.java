@@ -462,8 +462,6 @@ public class WxCartController {
                 checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
             }
         }
-        LitemallGroupon groupon  = new LitemallGroupon();
-        grouponService.createGroupon(groupon);
         // 计算优惠券可用情况
         BigDecimal tmpCouponPrice = new BigDecimal(0.00);
         Integer tmpCouponId = 0;

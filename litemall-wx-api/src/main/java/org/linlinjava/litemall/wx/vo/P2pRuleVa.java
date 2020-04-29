@@ -7,14 +7,23 @@ import java.math.BigDecimal;
 public class P2pRuleVa extends LitemallP2pRule {
     private long time;
     private BigDecimal price;
+    private BigDecimal avg;
     private String brief;
-    private Long saleCount;
+    private Integer saleCount;
 
-    public Long getSaleCount() {
+    public BigDecimal getAvg() {
+        return avg;
+    }
+
+    public void setAvg(BigDecimal avg) {
+        this.avg = avg;
+    }
+
+    public Integer getSaleCount() {
         return saleCount;
     }
 
-    public void setSaleCount(Long saleCount) {
+    public void setSaleCount(Integer saleCount) {
         this.saleCount = saleCount;
     }
 

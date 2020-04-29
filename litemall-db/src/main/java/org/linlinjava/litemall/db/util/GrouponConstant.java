@@ -1,12 +1,5 @@
 package org.linlinjava.litemall.db.util;
 
-import org.linlinjava.litemall.db.domain.LitemallOrder;
-
-import java.math.BigDecimal;
-
-import static java.math.BigDecimal.ROUND_UNNECESSARY;
-import static java.math.BigDecimal.ROUND_UP;
-
 public class GrouponConstant {
     public static final Short RULE_STATUS_ON = 0;
     public static final Short RULE_STATUS_DOWN_EXPIRE = 1;

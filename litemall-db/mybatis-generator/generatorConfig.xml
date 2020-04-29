@@ -198,8 +198,6 @@
         <table tableName="litemall_p2p_rule_goods">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
-        <table tableName="litemall_p2p_rule_order">
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-        </table>
+
     </context>
 </generatorConfiguration>

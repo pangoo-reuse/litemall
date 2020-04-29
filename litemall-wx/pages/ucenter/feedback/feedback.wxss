@@ -129,7 +129,7 @@ page {
   width: 100%;
   padding-top: 14rpx;
   padding-bottom: 11rpx;
-  color: #7f7f7f;
+  color: #a7a6a6;
   font-size: 24rpx;
   padding-left: 30rpx;
   padding-right: 30rpx;

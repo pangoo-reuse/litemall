@@ -23,9 +23,9 @@
     <view class="text-count">{{contentLength}}/500</view>
   </view>
   <view class="fb-mobile">
-    <view class="label">手机号码</view>
+    <view class="label">联系方式</view>
     <view class="mobile-box">
-      <input class="mobile" maxlength="11" type="number" placeholder="方便我们与你联系" bindinput="mobileInput" value="{{mobile}}" />
+      <input class="mobile" maxlength="11" type="number" placeholder="请输入手机号码" bindinput="mobileInput" value="{{mobile}}" />
       <van-icon class="clear-icon" name="close" wx:if="{{ mobile.length > 0 }}" catchtap="clearMobile"/>
     </view>
   </view>

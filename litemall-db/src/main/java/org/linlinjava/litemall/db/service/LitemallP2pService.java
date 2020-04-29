@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -27,8 +28,6 @@ public class LitemallP2pService {
     @Resource
     private CustomSqlMapper customSqlMapper;
 
-    @Resource
-    private LitemallP2pRuleOrderMapper p2pOrdersMapper;
     @Resource
     private LitemallOrderMapper litemallOrderMapper;
     @Resource
@@ -49,35 +48,6 @@ public class LitemallP2pService {
             .appendValue(SECOND_OF_MINUTE)
             .toFormatter(Locale.CHINA);
 
-    public static void main(String args[]) {
-        c(1, 30.0, 16.0, 3000);
-    }
-
-    private static void c(int personCount, double originPrice, double minPrice, int maxWeight) {
-        //价格:30 ,总份数:300
-
-        // 首先每个用户只允许下一单,不然不好计算。后期可允许用户多下几单
-        // 300 jin 卖给 x 个人，每个人买(x * y )斤 ，直到单价大于等于最低价。
-        // 本来你要拿着30元去进一斤，这个时候原价为16，也就是说你一份你赚14元。
-        // 而这个时候你把14元不赚了，平均分配给了300份，所以这个时候价格就低于30.
-        // 也就是说用户的30可以买30多元钱的货，也是就是货物不止最初的一份了。肯定比一份多。
-        // 你就必须拿出你赚的14元再多进一些货发给用户。这个时候你就赚不到14了。当再有用户购买，你又让出他的那份利润14元。分担到这原本300个订单上，这原本就不止一份的现在又多了一点，
-        // 你又要拿出上次的14元剩下的跟这次的14元再去躲进一些分配给这两个用户。依此类推，你每单的利润就会递减。
-        // 同时用户的单价就递减，也就是同样的钱可以买更多的东西了
-
-        // 但总体来讲，每单的利润低了，但单数多了你的利润也起来了。同样用户同样的价格买了更多的东西。互利共赢的
-
-        double currentPrice = originPrice - (originPrice - minPrice) / maxWeight * personCount;
-        System.out.println("购买人数:" + personCount);
-        System.out.println("当前单价:" + currentPrice);
-        System.out.println("每人得到多少份:" + originPrice / currentPrice);
-        if (currentPrice - minPrice > 0 && maxWeight > 0) {
-            personCount++;
-            maxWeight--;
-            c(personCount, originPrice, minPrice, maxWeight);
-
-        }
-    }
 
     private boolean valid(LitemallP2pRule p2pRules) {
         if (p2pRules == null || !p2pRules.getStatus() || p2pRules.getExpireTime().toInstant(ZoneOffset.of("+8")).toEpochMilli() > LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli()) {
@@ -140,14 +110,13 @@ public class LitemallP2pService {
                 Integer productId = (Integer) product.getOrDefault("id", 0);
                 Integer remoteGoodsId = (Integer) product.getOrDefault("goodsId", 0);
                 Object price = product.getOrDefault("price", "0.00");
-                Object number = product.getOrDefault("number", "0");
                 Integer rule = (Integer) product.getOrDefault("rule", 0);
                 LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
                 ruleGoodsExample.createCriteria().andRuleIdEqualTo(rid).andProductIdEqualTo(productId);
                 LitemallP2pRuleGoods ruleGoods = p2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
                 if (goodsId.compareTo(remoteGoodsId) == 0) {
                     ruleGoods = new LitemallP2pRuleGoods();
-                    buildRuleGoods(rid, productId, price, number, rule, ruleGoods);
+                    buildRuleGoods(rid, productId, price, rule, ruleGoods);
                     p2pRuleGoodsMapper.insertSelective(ruleGoods);
                     ruleGoodsList.add(ruleGoods);
                 }
@@ -207,7 +176,8 @@ public class LitemallP2pService {
                 if (ruleId == -1) {
                     // 表示新加的
                     LitemallP2pRuleGoods ruleGoods = new LitemallP2pRuleGoods();
-                    buildRuleGoods(rid, productId, price, number, rule, ruleGoods);
+                    buildRuleGoods(rid, productId, price,  rule, ruleGoods);
+                    p2pRuleGoodsMapper.insertSelective(ruleGoods);
                     ruleGoodsList.add(ruleGoods);
                 } else {
                     LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
@@ -215,7 +185,6 @@ public class LitemallP2pService {
                     LitemallP2pRuleGoods ruleGoods = p2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
 
                     ruleGoods.setPrice(new BigDecimal(price.toString()));
-                    ruleGoods.setNumber(Integer.parseInt(number.toString()));
                     ruleGoods.setRule(rule);
                     ruleGoods.setUpdateTime(LocalDateTime.now());
                     p2pRuleGoodsMapper.updateByPrimaryKeySelective(ruleGoods);
@@ -238,21 +207,23 @@ public class LitemallP2pService {
         return null;
     }
 
-    private void buildRuleGoods(Integer rid, Integer productId, Object price, Object number, Integer rule, LitemallP2pRuleGoods ruleGoods) {
+    private void buildRuleGoods(Integer rid, Integer productId, Object price,Integer rule, LitemallP2pRuleGoods ruleGoods) {
         ruleGoods.setRuleId(rid);
         ruleGoods.setProductId(productId);
         ruleGoods.setPrice(new BigDecimal(price.toString()));
-        ruleGoods.setNumber(Integer.parseInt(number.toString()));
         ruleGoods.setRule(rule);
         ruleGoods.setCreatedTime(LocalDateTime.now());
         ruleGoods.setUpdateTime(LocalDateTime.now());
     }
 
+    @Transactional
     public List<Integer> deleteP2pRules(List<Integer> ids) {
         if (ids != null && ids.size() > 0) {
             List<Integer> deleteIds = new ArrayList<Integer>();
             for (Integer id : ids) {
                 int rid = p2pRuleMapper.deleteByPrimaryKey(id);
+                LitemallP2pRuleGoodsExample example = new LitemallP2pRuleGoodsExample().createCriteria().andRuleIdEqualTo(id).example();
+                p2pRuleGoodsMapper.deleteByExample(example);
                 deleteIds.add(rid);
             }
             return deleteIds;
@@ -260,27 +231,6 @@ public class LitemallP2pService {
         return null;
     }
 
-    public LitemallP2pRuleOrder createP2pOrder(Integer orderId, Integer ruleId) {
-        LitemallOrder litemallOrder = litemallOrderMapper.selectByPrimaryKey(orderId);
-        if (litemallOrder != null) {
-            LitemallP2pRuleOrder p2pOrders = new LitemallP2pRuleOrder();
-//            p2pOrders.setOrderId(litemallOrder.getId());
-//            p2pOrders.setP2pRuleId(ruleId);
-//            p2pOrders.setUserId(litemallOrder.getUserId());
-//            p2pOrders.setOrderPrice(litemallOrder.getActualPrice());
-//            p2pOrders.setRefundPrice(BigDecimal.ZERO);
-//            p2pOrders.setCreatedTime(LocalDateTime.now());
-//            p2pOrders.setUpdateTime(LocalDateTime.now());
-//            int id = p2pOrdersMapper.insertSelective(p2pOrders);
-//            p2pOrders.setId(id);
-            return p2pOrders;
-        }
-        return null;
-    }
-
-    public int update(LitemallP2pRuleOrder LitemallP2pRuleOrder) {
-        return p2pOrdersMapper.updateByPrimaryKey(LitemallP2pRuleOrder);
-    }
 
     public List<Map<String, Object>> querySelective(String goodsName, Integer page, Integer limit, String sort, String order) {
         LitemallP2pRuleExample example = new LitemallP2pRuleExample();
@@ -336,7 +286,7 @@ public class LitemallP2pService {
                     product.remove("enabled");
                     product.remove("rule");
                     product.put("price", rg.getPrice());
-                    product.put("number", rg.getNumber());
+                    product.put("number", gp.getNumber());
                     product.put("enabled", true);
                     product.put("rule", rg.getRule());
                     product.put("ruleId", rg.getRuleId());

@@ -26,6 +26,9 @@ CREATE TABLE `litemall_shipping_config`
 ALTER TABLE `litemall_user`
     ADD `referral_code` varchar(64) COMMENT '用户分享码';
 
+ALTER TABLE `litemall_order`
+    ADD `is_p2p_order` tinyint(1) DEFAULT '0' COMMENT '是否闪购订单';
+
 
 DROP TABLE IF EXISTS `litemall_referral_views`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
@@ -76,8 +79,8 @@ DROP TABLE IF EXISTS `litemall_p2p_rule`;
 
 CREATE TABLE `litemall_p2p_rule`
 (
-    `id`           int(11)     NOT NULL AUTO_INCREMENT,
-    `goods_id`     int(11)     NOT NULL COMMENT '商品表的ID',
+    `id`           int(11)      NOT NULL AUTO_INCREMENT,
+    `goods_id`     int(11)      NOT NULL COMMENT '商品表的ID',
     `goods_name`   varchar(256) NOT NULL COMMENT '商品名称',
     `pic_url`      varchar(512) NOT NULL COMMENT '图片URL',
     `goods_desc`   varchar(512) NOT NULL COMMENT '产品描述',
@@ -100,8 +103,7 @@ CREATE TABLE `litemall_p2p_rule_goods`
     `id`           int(11) NOT NULL AUTO_INCREMENT,
     `rule_id`      int(11) NOT NULL COMMENT '规则ID',
     `product_id`   int(11) NOT NULL COMMENT '商品产品表的ID',
-    `price`        decimal(10, 2)   DEFAULT '0.00' COMMENT '商品货品的价格',
-    `number`       int(11) NOT NULL DEFAULT '0' COMMENT '商品数量',
+    `price`        decimal(10, 2)   DEFAULT '0.00' COMMENT '最低价格',
     `rule`         int(11) NOT NULL DEFAULT '0' COMMENT '商品规则: 0 退差价 ,1 补数量',
     `created_time` datetime         DEFAULT NULL COMMENT '创建时间',
     `update_time`  datetime         DEFAULT NULL COMMENT '更新时间',
@@ -113,19 +115,3 @@ CREATE TABLE `litemall_p2p_rule_goods`
 
 
 
-DROP TABLE IF EXISTS `litemall_p2p_rule_order`;
-
-CREATE TABLE `litemall_p2p_rule_order`
-(
-    `id`           int(11) NOT NULL AUTO_INCREMENT,
-    `rule_id`      int(11) NOT NULL COMMENT '规则ID',
-    `order_id`     int(11) NOT NULL COMMENT '订单ID',
-    `price`        decimal(10, 2) DEFAULT '0.00' COMMENT '购买时的价格',
-    `status`       tinyint(1)     DEFAULT '0' COMMENT '订单处理状态',
-    `created_time` datetime       DEFAULT NULL COMMENT '创建时间',
-    `update_time`  datetime       DEFAULT NULL COMMENT '更新时间',
-    `deleted`      tinyint(1)     DEFAULT '0' COMMENT '逻辑删除',
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
-  DEFAULT CHARSET = utf8mb4 COMMENT ='闪购订单表';

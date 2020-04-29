@@ -28,11 +28,13 @@ Page({
     collect: false,
     shareImage: '',
     isP2P: false, //标识是否是一个闪购
+    p2pPrice: 0.0,
+    p2pPricesList: [],
     soldout: false,
     canWrite: false, //用户是否获取了保存相册的权限
     selfReferralCode: '',
     uid: 0,
-    viewTask:undefined
+    viewTask: undefined
   },
 
   // 页面分享
@@ -110,22 +112,22 @@ Page({
     })
   },
 
-  //从分享的团购进入
-  getGrouponInfo: function (grouponId) {
-    let that = this;
-    util.request(api.GroupOnJoin, {
-      grouponId: grouponId
-    }).then(function (res) {
-      if (res.errno === 0) {
-        that.setData({
-          grouponLink: res.data.groupon,
-          id: res.data.goods.id
-        });
-        //获取商品详情
-        that.getGoodsInfo();
-      }
-    });
-  },
+  // //从分享的团购进入
+  // getGrouponInfo: function (grouponId) {
+  //   let that = this;
+  //   util.request(api.GroupOnJoin, {
+  //     grouponId: grouponId
+  //   }).then(function (res) {
+  //     if (res.errno === 0) {
+  //       that.setData({
+  //         grouponLink: res.data.groupon,
+  //         id: res.data.goods.id
+  //       });
+  //       //获取商品详情
+  //       that.getGoodsInfo();
+  //     }
+  //   });
+  // },
 
   // 获取商品信息
   getGoodsInfo: function () {
@@ -172,6 +174,7 @@ Page({
           groupon: res.data.groupon,
           canShare: res.data.share,
           shippingInfo: res.data.shippingInfo,
+          p2pPricesList: res.data.p2p.prices,
         });
 
         //如果是通过分享的团购参加团购，则团购项目应该与分享的一致并且不可更改
@@ -370,10 +373,14 @@ Page({
       }
 
       let checkedProduct = checkedProductArray[0];
+
       if (checkedProduct.number > 0) {
+        let p = this.data.p2pPricesList.filter((pricePair) => pricePair[checkedProduct.id])[0][checkedProduct.id];
+        console.log(p)
         this.setData({
           checkedSpecPrice: checkedProduct.price,
-          soldout: false
+          soldout: false,
+          p2pPrice:p
         });
       } else {
         this.setData({
@@ -416,7 +423,7 @@ Page({
     })
 
 
-   var viewTask = setTimeout(function () {
+    var viewTask = setTimeout(function () {
       console.log("添加浏览访问:" + app.globalData.referralCode)
       if (app.globalData.referralCode && that.data.selfReferralCode != app.globalData.referralCode) {
         //String referrerCode, Integer viewerId, Integer goodsId
@@ -556,8 +563,6 @@ Page({
             // 如果storage中设置了cartId，则是立即购买，否则是购物车购买
             try {
               wx.setStorageSync('cartId', res.data);
-              wx.setStorageSync('grouponRulesId', checkedGroupon.id);
-              wx.setStorageSync('grouponLinkId', that.data.grouponLink.id);
               wx.navigateTo({
                 url: '/pages/checkout/checkout'
               })

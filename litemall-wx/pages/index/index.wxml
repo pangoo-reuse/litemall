@@ -19,28 +19,34 @@
 		</swiper-item>
 	</swiper>
 	<view class="m-menu">
+
 		<navigator class="item" url="/pages/category/category?id={{item.id}}" wx:for="{{channel}}" wx:key="id">
+
 			<image src="{{item.iconUrl}}" background-size="cover"></image>
 			<text>{{item.name}}</text>
+
 		</navigator>
+
 	</view>
 
 	<view class="a-section a-coupon" wx:if="{{coupon.length > 0}}">
-		<view class="h">
-			<view class="title">
-				<view>
-					<navigator url="/pages/coupon/coupon">
-						<text class="txt">优惠券</text>
-					</navigator>
+
+		<navigator url="/pages/coupon/coupon">
+			<custom-flex main='between' cross='center'>
+				<text class="placeholder">优</text>
+				<text class="title">优惠券</text>
+				<view class="more">
+					<van-icon name="arrow" color='gray' />
 				</view>
-			</view>
-		</view>
+			</custom-flex>
+		</navigator>
+
 		<view wx:if="{{coupon.length>0}}" class="b">
 			<view class="item" wx:for="{{coupon}}" wx:for-index="index" wx:for-item="item" wx:key="id" bindtap="getCoupon" data-index="{{item.id}}">
 				<view class="tag">{{item.tag}}</view>
 				<view class="content">
 					<view class="left">
-						<view class="discount">{{item.maxPersonCount}}元</view>
+						<view class="discount">{{item.discount}}元</view>
 						<view class="min"> 满{{item.min}}元使用</view>
 					</view>
 					<view class="right">
@@ -55,15 +61,16 @@
 	</view>
 
 	<view class="a-section a-groupon" wx:if="{{groupons.length > 0}}">
-		<view class="h">
-			<view class="title">
-				<view>
-					<navigator url="/pages/groupon/grouponList/grouponList">
-						<text class="txt">闪购专区></text>
-					</navigator>
+
+		<navigator url="/pages/groupon/grouponList/grouponList">
+			<custom-flex main='between' cross='center'>
+				<text class="placeholder">闪购</text>
+				<text class="title">闪购专区</text>
+				<view class="more">
+					<van-icon name="arrow" color='gray' />
 				</view>
-			</view>
-		</view>
+			</custom-flex>
+		</navigator>
 		<view class="b">
 			<view class="item" wx:for="{{groupons}}" wx:for-index="index" wx:for-item="item" wx:key="id">
 				<navigator url="/pages/goods/goods?id={{item.goodsId}}&grouponId={{item.id}}">
@@ -77,7 +84,7 @@
 								<text class="name">{{item.goodsName}}</text>
 							</van-row>
 							<van-row>
-								<text class="desc">{{item.brief}}</text>
+								<text class="desc">{{item.goodsDesc}}</text>
 							</van-row>
 							<van-row>
 								<view class="retailPrice">闪购价 ￥{{item.price}}</view>
@@ -101,13 +108,17 @@
 
 
 	<view class="a-section a-new" wx:if="{{newGoods.length > 0}}">
-		<view class="h">
-			<view>
-				<navigator url="../newGoods/newGoods">
-					<text class="txt">周一周四 · 新品首发</text>
-				</navigator>
-			</view>
-		</view>
+
+		<navigator url="../newGoods/newGoods">
+			<custom-flex main='between' cross='center'>
+				<text class="placeholder">新</text>
+				<text class="title">新品首发</text>
+				<view class="more">
+					<van-icon name="arrow" color='gray' />
+				</view>
+			</custom-flex>
+		</navigator>
+
 		<view class="b">
 			<view class="item" wx:for="{{newGoods}}" wx:for-index="index" wx:for-item="item" wx:key="id">
 				<navigator url="../goods/goods?id={{item.id}}">
@@ -120,13 +131,17 @@
 	</view>
 
 	<view class="a-section a-popular" wx:if="{{hotGoods.length > 0}}">
-		<view class="h">
-			<view>
-				<navigator url="../hotGoods/hotGoods">
-					<text class="txt">人气推荐</text>
-				</navigator>
-			</view>
-		</view>
+
+		<navigator url="../hotGoods/hotGoods">
+			<custom-flex main='between' cross='center'>
+				<text class="placeholder">人</text>
+				<text class="title">人气推荐</text>
+				<view class="more">
+					<van-icon name="arrow" color='gray' />
+				</view>
+			</custom-flex>
+		</navigator>
+
 		<view class="b">
 			<view class="item" wx:for="{{hotGoods}}" wx:for-index="index" wx:for-item="item" wx:key="id">
 				<navigator url="/pages/goods/goods?id={{item.id}}">
@@ -144,13 +159,16 @@
 	</view>
 
 	<view class="a-section a-topic" wx:if="topics.length > 0" hidden="{{topics.length <= 0}}">
-		<view class="h">
-			<view>
-				<navigator url="/pages/topic/topic">
-					<text class="txt">专题精选</text>
-				</navigator>
-			</view>
-		</view>
+
+		<navigator url="/pages/topic/topic">
+			<custom-flex main='between' cross='center'>
+				<text class="placeholder">专</text>
+				<text class="title">专题精选</text>
+				<view class="more">
+					<van-icon name="arrow" color='gray' />
+				</view>
+			</custom-flex>
+		</navigator>
 		<view class="b">
 			<scroll-view scroll-x class="list">
 				<view class="item" wx:for="{{topics}}" wx:for-index="index" wx:for-item="item" wx:key="id">

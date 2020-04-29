@@ -1,7 +1,5 @@
 package org.linlinjava.litemall.wx.task;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.system.SystemConfig;
 import org.linlinjava.litemall.core.task.TaskService;
 import org.linlinjava.litemall.db.domain.LitemallOrder;

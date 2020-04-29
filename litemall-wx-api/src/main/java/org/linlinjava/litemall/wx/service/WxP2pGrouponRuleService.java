@@ -3,10 +3,13 @@ package org.linlinjava.litemall.wx.service;
 import com.github.pagehelper.Page;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.linlinjava.litemall.db.dao.CustomSqlMapper;
 import org.linlinjava.litemall.db.dao.LitemallOrderMapper;
-import org.linlinjava.litemall.db.dao.LitemallP2pRuleOrderMapper;
+import org.linlinjava.litemall.db.dao.LitemallP2pRuleGoodsMapper;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.domain.LitemallP2pRule;
+import org.linlinjava.litemall.db.domain.LitemallP2pRuleGoods;
+import org.linlinjava.litemall.db.domain.LitemallP2pRuleGoodsExample;
 import org.linlinjava.litemall.db.service.LitemallGoodsService;
 import org.linlinjava.litemall.db.service.LitemallP2pService;
 import org.linlinjava.litemall.wx.vo.P2pRuleVa;
@@ -25,9 +28,11 @@ public class WxP2pGrouponRuleService {
     @Autowired
     private LitemallP2pService grouponRulesService;
     @Resource
-    private LitemallP2pRuleOrderMapper litemallP2pRuleOrderMapper;
+    private LitemallP2pRuleGoodsMapper litemallP2pRuleGoodsMapper;
     @Resource
     private LitemallOrderMapper litemallOrderMapper;
+    @Resource
+    private CustomSqlMapper customSqlMapper;
     @Autowired
     private LitemallGoodsService litemallGoodsService;
 
@@ -41,39 +46,45 @@ public class WxP2pGrouponRuleService {
         Page<LitemallP2pRule> grouponRulesList = (Page<LitemallP2pRule>) grouponRulesService.queryList(page, size, sort, order);
 //
         Page<P2pRuleVa> grouponList = new Page<P2pRuleVa>();
-//        grouponList.setPages(grouponRulesList.getPages());
-//        grouponList.setPageNum(grouponRulesList.getPageNum());
-//        grouponList.setPageSize(grouponRulesList.getPageSize());
-//        grouponList.setTotal(grouponRulesList.getTotal());
-//        for (LitemallP2pRules rule : grouponRulesList) {
-//            LitemallGoods goods = litemallGoodsService.findById(rule.getProductId());
-//            if (goods != null){
-//
-//                LitemallP2pOrdersExample ordersExample = new LitemallP2pOrdersExample();
-//                ordersExample.createCriteria().andP2pRuleIdEqualTo(rule.getId());
-//                long orderCount = litemallP2pRuleOrderMapper.countByExample(ordersExample);
-//                P2pRuleVa va = new P2pRuleVa();
-//                long currentLong = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
-//                long time = rule.getExpireTime().toInstant(ZoneOffset.of("+8")).toEpochMilli() - currentLong ;
-//                va.setTime(time);
-//                va.setId(rule.getId());
-//                va.setSaleCount(orderCount);
-//                va.setProductId(rule.getProductId());
-//                va.setAvgPrice(rule.getAvgPrice());
-//                va.setPrice(goods.getRetailPrice());
-//                va.setBrief(goods.getBrief());
-//                va.setMaxPersonCount(rule.getMaxPersonCount());
-//                va.setProductCount(rule.getProductCount());
-//                va.setProductName(rule.getProductName());
-//                va.setPicUrl(rule.getPicUrl());
-//                va.setState(rule.getState());
-//                va.setProductRule(rule.getProductRule());
-//                va.setShippingRule(rule.getShippingRule());
-//                va.setExpireTime(rule.getExpireTime());
-//                grouponList.add(va);
-//            }
-//
-//        }
+        grouponList.setPages(grouponRulesList.getPages());
+        grouponList.setPageNum(grouponRulesList.getPageNum());
+        grouponList.setPageSize(grouponRulesList.getPageSize());
+        grouponList.setTotal(grouponRulesList.getTotal());
+        for (LitemallP2pRule rule : grouponRulesList) {
+            LitemallGoods goods = litemallGoodsService.findById(rule.getGoodsId());
+            if (goods != null) {
+                LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
+                ruleGoodsExample.createCriteria().andRuleIdEqualTo(rule.getId());
+                List<LitemallP2pRuleGoods> ruleGoodsList = litemallP2pRuleGoodsMapper.selectByExampleSelective(ruleGoodsExample);
+                int saleCount = 10;
+                for (LitemallP2pRuleGoods ruleGoods : ruleGoodsList) {
+                    Integer productId = ruleGoods.getProductId();
+                    int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId);// 当前产品的闪购订单已卖出多少件
+                    saleCount += productSaleCount;
+                }
+
+
+                P2pRuleVa va = new P2pRuleVa();
+                long currentLong = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+                long time = rule.getExpireTime().toInstant(ZoneOffset.of("+8")).toEpochMilli() - currentLong;
+                va.setTime(time);
+                va.setId(rule.getId());
+                va.setSaleCount(saleCount);
+
+                va.setGoodsId(rule.getGoodsId());
+                va.setPrice(goods.getRetailPrice());
+                va.setBrief(goods.getBrief());
+                va.setGoodsName(rule.getGoodsName());
+                va.setPicUrl(rule.getPicUrl());
+                va.setStatus(rule.getStatus());
+                va.setExpireTime(rule.getExpireTime());
+//                int orderCount = customSqlMapper.orderCountByRuleOrderId(rule.getId());
+//                //int orderCount, double originPrice, double minPrice, int maxPiece
+//                grouponRulesService.getCurrentPrice(orderCount,va.getPrice(),);
+                grouponList.add(va);
+            }
+
+        }
 
 
         return grouponList;

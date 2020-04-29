@@ -80,9 +80,7 @@
             </template>
           </el-autocomplete>
         </el-form-item>
-        <!--        <el-form-item label="图片" prop="image" v-if="dataForm.picUrl" >-->
-        <!--          <img :src="dataForm.picUrl" height="90" style="background-color: #ececec">-->
-        <!--        </el-form-item>-->
+
         <el-form-item label="下线时间" prop="expireTime">
           <el-date-picker
             v-model="dataForm.expireTime"
@@ -317,7 +315,6 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         const products = this.dataForm.products.filter(product => product.enabled)
-        console.log(this.dataForm)
         if (valid) {
           createRule({
             products: products,
@@ -345,7 +342,6 @@ export default {
     handleUpdate(row) {
       this.dataForm.unit = row.unit
       this.dataForm = Object.assign({}, row)
-      console.log(row)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -363,6 +359,7 @@ export default {
             expireTime: this.dataForm.expireTime
           })
             .then((response) => {
+              this.getList()
               this.dialogFormVisible = false
               this.$notify.success({
                 title: '成功',
@@ -380,11 +377,9 @@ export default {
       })
     },
     handleDelete(row) {
-      deleteCategory(row)
+      deleteRule(row)
         .then(response => {
           this.getList()
-          // 更新L1目录
-          this.getCatL1()
           this.$notify.success({
             title: '成功',
             message: '删除成功'

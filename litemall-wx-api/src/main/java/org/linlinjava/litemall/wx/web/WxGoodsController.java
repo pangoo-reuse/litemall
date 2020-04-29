@@ -2,6 +2,7 @@ package org.linlinjava.litemall.wx.web;
 
 import com.github.pagehelper.PageInfo;
 import com.mysql.jdbc.StringUtils;
+import com.sun.org.apache.xerces.internal.xs.StringList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.system.SystemConfig;
@@ -11,6 +12,7 @@ import org.linlinjava.litemall.core.validator.Sort;
 import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.service.WxOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +36,9 @@ import java.util.concurrent.*;
 @Validated
 public class WxGoodsController {
     private final Log logger = LogFactory.getLog(WxGoodsController.class);
+
+    @Autowired
+    private WxOrderService wxOrderService;
 
     @Autowired
     private LitemallGoodsService goodsService;
@@ -202,6 +207,26 @@ public class WxGoodsController {
                 expressFreightMin = SystemConfig.getFreightLimit();
                 freightValue = SystemConfig.getFreight();
             }
+            HashMap<String, Object> p2p = new HashMap<String, Object>();
+            LitemallP2pRule p2pRule = p2pRuleTask.get();
+            List<Map<Integer, BigDecimal>> currents = new ArrayList<Map<Integer, BigDecimal>>();
+            if (p2pRule != null && p2pRule.getGoodsId().compareTo(goods.getId()) == 0) {
+                p2p.put("ruleId",p2pRule.getId());
+                // 证明这是一个闪购
+                List<LitemallGoodsProduct> products = productService.queryByGid(goods.getId());
+                for (LitemallGoodsProduct product : products) {
+                    Integer productId = product.getId();
+
+                    BigDecimal currentPrice = wxOrderService.getCurrentPrice(productId, p2pRule.getId());
+                    HashMap<Integer, BigDecimal> map = new HashMap<Integer, BigDecimal>();
+                    map.put(productId, currentPrice);
+                    currents.add(map);
+                }
+                p2p.put("prices",currents);
+
+            }
+
+
 
             data.put("info", goods);
             data.put("userHasCollect", userHasCollect);
@@ -215,7 +240,7 @@ public class WxGoodsController {
             data.put("productList", productListCallableTask.get());
             data.put("attribute", goodsAttributeListTask.get());
             data.put("brand", brandCallableTask.get());
-            data.put("groupon", p2pRuleTask.get());
+            data.put("p2p", p2p);
             //SystemConfig.isAutoCreateShareImage()
             data.put("share", SystemConfig.isAutoCreateShareImage());
 
