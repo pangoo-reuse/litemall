@@ -3,7 +3,7 @@
 
     <!-- 查询和其他操作 -->
     <div class="filter-container">
-      <el-input v-model="query.name" clearable class="filter-item" style="width: 200px;" placeholder="活动产品标题" />
+      <el-input v-model="query.goodsName" clearable class="filter-item" style="width: 200px;" placeholder="活动产品标题" />
       <el-button
         v-permission="['GET /admin/p2p/list']"
         class="filter-item"
@@ -66,18 +66,24 @@
         <el-form-item label="商品名" prop="goodsName">
           <el-autocomplete
             v-model="dataForm.goodsName"
+            :aria-disabled="true"
             popper-class="m-autocomplete"
             placeholder="商品名或关键字"
             :fetch-suggestions="queryGoods"
             :trigger-on-focus="false"
+            :disabled="dialogStatus==='update'"
             @select="handleGoodsSelected"
           >
             <template slot-scope="{ item }" class="inlineBlock">
               <div class="name">{{ item.name }}</div>
+              <span style="font-size: 12px;color: #b4b4b4;">{{ item.brief }}</span>
             </template>
           </el-autocomplete>
         </el-form-item>
-        <el-form-item label="过期时间" prop="expireTime">
+        <!--        <el-form-item label="图片" prop="image" v-if="dataForm.picUrl" >-->
+        <!--          <img :src="dataForm.picUrl" height="90" style="background-color: #ececec">-->
+        <!--        </el-form-item>-->
+        <el-form-item label="下线时间" prop="expireTime">
           <el-date-picker
             v-model="dataForm.expireTime"
             type="datetime"
@@ -93,8 +99,13 @@
         </el-form-item>
 
         <el-table :data="dataForm.products" stripe border style="width: 100%" size="mini">
-
-          <el-table-column type="index" label="序号" min-width="20" align="center" />
+          <el-table-column label="图片" align="center" valign="center" width="90">
+            <template slot-scope="scope">
+              <el-form-item prop="url" style="margin-bottom: 0 !important; margin-top: 10px !important;">
+                <img :src="scope.row.url" height="50" style="background-color: #ececec">
+              </el-form-item>
+            </template>
+          </el-table-column>
           <el-table-column label="商品ID" align="center" valign="center" prop="goodsId" />
           <el-table-column label="属性" align="center" valign="center" prop="specifications" />
           <el-table-column
@@ -103,8 +114,9 @@
             valign="center"
           >
             <template slot-scope="scope">
-              <el-form-item prop="number">
-                <el-input v-model="scope.row.number" size="small" placeholder="≥原始价" />
+              <el-form-item prop="number" style="margin-bottom: 0 !important; margin-top: 8px !important;">
+                <!--                ≥原始价-->
+                <el-input v-model="scope.row.number" size="small" placeholder="≥原售价" />
               </el-form-item>
             </template>
           </el-table-column>
@@ -112,9 +124,10 @@
             :label="dataForm.unit == undefined ? '最低售价(元)':'最低售价(元)/'+dataForm.unit "
             align="center"
             valign="center"
+            width="110"
           >
             <template slot-scope="scope">
-              <el-form-item prop="price">
+              <el-form-item prop="price" style="margin-bottom: 0 !important; margin-top: 8px !important;">
                 <el-input v-model="scope.row.price" size="small" placeholder="成本+利润" />
 
               </el-form-item>
@@ -123,7 +136,7 @@
 
           <el-table-column label="规则" align="center" valign="center">
             <template slot-scope="scope">
-              <el-form-item prop="rule">
+              <el-form-item prop="rule" style="margin-bottom: 0 !important; margin-top: 8px !important;">
                 <el-select v-model="scope.row.rule" placeholder="请选择">
                   <el-option :value="0" label="退差价" />
                   <el-option :value="1" label="补数量" />
@@ -134,7 +147,7 @@
 
           <el-table-column label="是否启用" align="center" valign="center">
             <template slot-scope="scope">
-              <el-form-item prop="enabled">
+              <el-form-item prop="enabled" style="margin-bottom: 0 !important; margin-top: 8px !important;">
                 <el-checkbox v-model="scope.row.enabled" :label="true">启用</el-checkbox>
               </el-form-item>
             </template>
@@ -165,6 +178,7 @@
   .m-autocomplete li {
     line-height: normal;
     padding: 7px;
+
   }
 
   .el-table td, .el-table th {
@@ -188,7 +202,7 @@ export default {
       dataForm: {
         goodsId: undefined,
         goodsName: '',
-        unit: '',
+        unit: undefined,
         expireTime: undefined,
         status: false,
         products: []
@@ -201,7 +215,7 @@ export default {
         create: '创建'
       },
       query: {
-        name: ''
+        goodsName: ''
       },
       rules: {
         name: [{ required: true, message: '类目名不能为空', trigger: 'blur' }],
@@ -220,22 +234,22 @@ export default {
   },
   created() {
     this.getList()
-    this.getCatL1()
   },
   methods: {
+
     queryGoods(queryString, cb) {
       if (queryString != null) {
         queryGoods({ keywords: this.dataForm.goodsName })
-          .then(res => {
-            const data = res.data.data.list
+          .then(response => {
+            const data = response.data.data.list
             for (const ex of data) {
               ex.value = ex.name // ps:必须为每个对象增加value字段！！因为autocomplete只识别value字段并在下拉列中显示
             }
             cb(data)
-          }).catch(res => {
+          }).catch(response => {
             this.$notify.error({
               title: '查询失败',
-              message: res.data
+              message: response.data
             })
           })
       } else {
@@ -247,26 +261,27 @@ export default {
     },
     handleGoodsSelected(item) {
       this.dataForm.unit = item.unit
+      this.dataForm.picUrl = item.picUrl
       this.dataForm.goodsId = item.id
       queryGoodsProduct({ 'goodsId': this.dataForm.goodsId })
-        .then(res => {
-          const data = res.data.data.list
+        .then(response => {
+          const data = response.data.data.list
           for (const ex of data) {
             ex.rule = 0
             ex.enabled = true
           }
           this.dataForm.products = data
-        }).catch(res => {
+        }).catch(response => {
           this.$notify.error({
             title: '匹配失败',
-            message: res.data
+            message: response.data
           })
         })
     },
 
     getList() {
       this.listLoading = true
-      listRules()
+      listRules(this.query)
         .then(response => {
           this.list = response.data.data.list
           // this.dataForm = this.list;
@@ -282,7 +297,8 @@ export default {
       this.dataForm = {
         id: undefined,
         goodsName: '',
-        unit: '',
+        unit: undefined,
+        picUrl: undefined,
         expireTime: undefined,
         status: false,
         products: []
@@ -310,9 +326,7 @@ export default {
             expireTime: this.dataForm.expireTime
           })
             .then(response => {
-              this.getList()
-              // 更新L1目录
-              this.getCatL1()
+              this.list.unshift(response.data.data)
               this.dialogFormVisible = false
               this.$notify.success({
                 title: '成功',
@@ -329,6 +343,7 @@ export default {
       })
     },
     handleUpdate(row) {
+      this.dataForm.unit = row.unit
       this.dataForm = Object.assign({}, row)
       console.log(row)
       this.dialogStatus = 'update'
@@ -340,15 +355,14 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          const products = this.dataForm.products.filter(product => product.enabled)
+          // const products = this.dataForm.products.filter(product => product.enabled)
           editRule({
-            products: products,
+            products: this.dataForm.products,
             enable: this.dataForm.status,
             goodsId: this.dataForm.goodsId,
             expireTime: this.dataForm.expireTime
           })
-            .then(() => {
-              this.list.unshift(res.data.data)
+            .then((response) => {
               this.dialogFormVisible = false
               this.$notify.success({
                 title: '成功',
@@ -356,6 +370,7 @@ export default {
               })
             })
             .catch(response => {
+              console.error(response)
               this.$notify.error({
                 title: '失败',
                 message: response.data.errmsg

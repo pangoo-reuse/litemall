@@ -61,8 +61,8 @@ public class AdminP2pOrderController {
     @RequiresPermissionsDesc(menu = {"推广管理", "p2p管理"}, button = "添加")
     @PostMapping("/create")
     public Object create(@RequestBody Map<String,Object> content) throws Exception {
-        LitemallP2pRule p2PRule = p2PGrouponService.createP2PRule(content);
-        return ResponseUtil.ok(p2PRule);
+        Map<String,Object> info = p2PGrouponService.createP2PRule(content);
+        return ResponseUtil.ok(info);
     }
 
     @RequiresPermissions("admin:p2p:read")
@@ -84,7 +84,7 @@ public class AdminP2pOrderController {
     @RequiresPermissionsDesc(menu = {"推广管理", "p2p管理"}, button = "编辑")
     @PostMapping("/update")
     public Object update(@RequestBody Map<String,Object> content) throws Exception {
-        LitemallP2pRule p2pRule = p2PGrouponService.updateP2PRule(content);
+        Map<String,Object> p2pRule = p2PGrouponService.updateP2PRule(content);
         if (p2pRule == null) {
             return ResponseUtil.updatedDataFailed();
         }

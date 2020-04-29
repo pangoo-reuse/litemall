@@ -35,6 +35,19 @@ public class LitemallP2pService {
     private LitemallGoodsMapper litemallGoodsMapper;
     @Resource
     private LitemallGoodsProductMapper litemallGoodsProductMapper;
+    private DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
+            .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
+            .appendLiteral('-')
+            .appendValue(MONTH_OF_YEAR, 2)
+            .appendLiteral('-')
+            .appendValue(DAY_OF_MONTH, 2)
+            .appendLiteral(" ")
+            .appendValue(HOUR_OF_DAY)
+            .appendLiteral(":")
+            .appendValue(MINUTE_OF_HOUR)
+            .appendLiteral(":")
+            .appendValue(SECOND_OF_MINUTE)
+            .toFormatter(Locale.CHINA);
 
     public static void main(String args[]) {
         c(1, 30.0, 16.0, 3000);
@@ -74,27 +87,18 @@ public class LitemallP2pService {
     }
 
     @Transactional
-    public LitemallP2pRule createP2PRule(Map<String, Object> data) throws Exception {
-
-        return processP2pRule(data, false);
-    }
-
-    private LitemallP2pRule processP2pRule(Map<String, Object> data, boolean update) {
+    public Map<String, Object> createP2PRule(Map<String, Object> data) throws Exception {
         Integer goodsId = (Integer) data.getOrDefault("goodsId", 0);
         boolean enable = (boolean) data.getOrDefault("enable", false);
         String expireTime = (String) data.get("expireTime");
         List<Map<String, Object>> products = (List<Map<String, Object>>) data.get("products");
 
         if (goodsId != null && !StringUtils.isEmpty(expireTime) && products != null && products.size() > 0) {
-            LitemallP2pRule p2pRule = null;
             LitemallP2pRuleExample ruleExample = new LitemallP2pRuleExample();
             ruleExample.createCriteria().andDeletedEqualTo(false).andGoodsIdEqualTo(goodsId);
-            if (!update) {
-                long ruleCount = p2pRuleMapper.countByExample(ruleExample);
-                if (ruleCount > 0) throw new RuntimeException("活动已存在");
-            } else {
-                p2pRule = p2pRuleMapper.selectOneByExampleSelective(ruleExample);
-            }
+            long ruleCount = p2pRuleMapper.countByExample(ruleExample);
+            if (ruleCount > 0) throw new RuntimeException("活动已存在");
+
             DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
                     .appendValue(YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
                     .appendLiteral('-')
@@ -114,8 +118,7 @@ public class LitemallP2pService {
             if (now >= expir) throw new RuntimeException("下线时间需大于当前时间");
             LitemallGoods goods = litemallGoodsMapper.selectByPrimaryKey(goodsId);
             if (goods == null) throw new RuntimeException("未找到产品");
-
-            Integer rid = null;
+            LitemallP2pRule p2pRule = new LitemallP2pRule();
             String goodsName = goods.getName();
             String desc = goods.getBrief();
             String picUrl = goods.getPicUrl();
@@ -127,55 +130,32 @@ public class LitemallP2pService {
             p2pRule.setPicUrl(picUrl);
             p2pRule.setStatus(enable);
             p2pRule.setExpireTime(expire);
-
-            if (!update) {
-                p2pRule.setId(null);
-                p2pRuleMapper.insertSelective(p2pRule);
-                rid = p2pRule.getId();
-                p2pRule.setId(rid);
-            } else {
-                p2pRuleMapper.updateByPrimaryKey(p2pRule);
-                rid = p2pRule.getId();
-            }
+            p2pRuleMapper.insertSelective(p2pRule);
+            Integer rid = p2pRule.getId();
+            p2pRule.setId(rid);
 
 
             List<LitemallP2pRuleGoods> ruleGoodsList = new ArrayList<LitemallP2pRuleGoods>();
             for (Map<String, Object> product : products) {
-                Integer pid = (Integer) product.getOrDefault("id", 0);
-                Integer gId = (Integer) product.getOrDefault("goodsId", 0);
+                Integer productId = (Integer) product.getOrDefault("id", 0);
+                Integer remoteGoodsId = (Integer) product.getOrDefault("goodsId", 0);
                 Object price = product.getOrDefault("price", "0.00");
                 Object number = product.getOrDefault("number", "0");
                 Integer rule = (Integer) product.getOrDefault("rule", 0);
                 LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
-                ruleGoodsExample.createCriteria().andRuleIdEqualTo(rid).andProductIdEqualTo(pid);
+                ruleGoodsExample.createCriteria().andRuleIdEqualTo(rid).andProductIdEqualTo(productId);
                 LitemallP2pRuleGoods ruleGoods = p2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
-                if (goodsId.compareTo(gId) == 0) {
-
-
-
-                    if (!update)  ruleGoods  = new LitemallP2pRuleGoods();
-                    ruleGoods.setRuleId(rid);
-                    ruleGoods.setProductId(pid);
-                    ruleGoods.setPrice(new BigDecimal(price.toString()));
-                    ruleGoods.setNumber(Integer.parseInt(number.toString()));
-                    ruleGoods.setRule(rule);
-                    ruleGoods.setCreatedTime(LocalDateTime.now());
-                    ruleGoods.setUpdateTime(LocalDateTime.now());
-                    if (!update) {
-
-                        p2pRuleGoodsMapper.insertSelective(ruleGoods);
-                    } else {
-
-                        p2pRuleGoodsMapper.updateByPrimaryKeySelective(ruleGoods);
-                    }
-
-
+                if (goodsId.compareTo(remoteGoodsId) == 0) {
+                    ruleGoods = new LitemallP2pRuleGoods();
+                    buildRuleGoods(rid, productId, price, number, rule, ruleGoods);
+                    p2pRuleGoodsMapper.insertSelective(ruleGoods);
                     ruleGoodsList.add(ruleGoods);
                 }
             }
             if (ruleGoodsList.size() > 0) {
                 ruleGoodsList.clear();
-                return p2pRule;
+                Map<String, Object> info = getRuleInfo(p2pRule);
+                return info;
             }
 
 
@@ -186,8 +166,86 @@ public class LitemallP2pService {
         return null;
     }
 
-    public LitemallP2pRule updateP2PRule(Map<String, Object> content) throws Exception {
-        return processP2pRule(content, true);
+
+    public Map<String, Object> updateP2PRule(Map<String, Object> data) throws Exception {
+        Integer goodsId = (Integer) data.getOrDefault("goodsId", 0);
+        boolean enable = (boolean) data.getOrDefault("enable", false);
+        String expireTime = (String) data.get("expireTime");
+        List<Map<String, Object>> products = (List<Map<String, Object>>) data.get("products");
+
+        if (goodsId != null && !StringUtils.isEmpty(expireTime) && products != null && products.size() > 0) {
+            LitemallP2pRuleExample ruleExample = new LitemallP2pRuleExample();
+            ruleExample.createCriteria().andDeletedEqualTo(false).andGoodsIdEqualTo(goodsId);
+            LitemallP2pRule p2pRule = p2pRuleMapper.selectOneByExample(ruleExample);
+            if (p2pRule == null) throw new RuntimeException("活动不存在");
+
+
+            LocalDateTime expire = LocalDateTime.parse(expireTime, dateTimeFormatter);
+            long expir = expire.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+            long now = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+            if (now >= expir) throw new RuntimeException("下线时间需大于当前时间");
+            LitemallGoods goods = litemallGoodsMapper.selectByPrimaryKey(goodsId);
+            if (goods == null) throw new RuntimeException("未找到产品");
+
+            p2pRule.setUpdateTime(LocalDateTime.now());
+            p2pRule.setGoodsId(goodsId);
+            p2pRule.setStatus(enable);
+            p2pRule.setExpireTime(expire);
+            p2pRuleMapper.updateByPrimaryKeySelective(p2pRule);
+            Integer rid = p2pRule.getId();
+            p2pRule.setId(rid);
+
+
+            List<LitemallP2pRuleGoods> ruleGoodsList = new ArrayList<LitemallP2pRuleGoods>();
+            for (Map<String, Object> product : products) {
+                Integer productId = (Integer) product.getOrDefault("id", 0);
+                Object price = product.getOrDefault("price", "0.00");
+                Object number = product.getOrDefault("number", "0");
+                Integer rule = (Integer) product.getOrDefault("rule", 0);
+                boolean enabled = (boolean) product.getOrDefault("enabled", true);
+                Integer ruleId = (Integer) product.getOrDefault("ruleId", -1);
+                if (ruleId == -1) {
+                    // 表示新加的
+                    LitemallP2pRuleGoods ruleGoods = new LitemallP2pRuleGoods();
+                    buildRuleGoods(rid, productId, price, number, rule, ruleGoods);
+                    ruleGoodsList.add(ruleGoods);
+                } else {
+                    LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
+                    ruleGoodsExample.createCriteria().andRuleIdEqualTo(rid).andProductIdEqualTo(productId);
+                    LitemallP2pRuleGoods ruleGoods = p2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
+
+                    ruleGoods.setPrice(new BigDecimal(price.toString()));
+                    ruleGoods.setNumber(Integer.parseInt(number.toString()));
+                    ruleGoods.setRule(rule);
+                    ruleGoods.setUpdateTime(LocalDateTime.now());
+                    p2pRuleGoodsMapper.updateByPrimaryKeySelective(ruleGoods);
+                    ruleGoodsList.add(ruleGoods);
+                }
+
+                if (!enabled) {
+                    LitemallP2pRuleGoodsExample example = new LitemallP2pRuleGoodsExample().createCriteria().andProductIdEqualTo(productId).example();
+                    p2pRuleGoodsMapper.deleteByExample(example);
+                }
+            }
+            if (ruleGoodsList.size() > 0) {
+                ruleGoodsList.clear();
+                Map<String, Object> info = getRuleInfo(p2pRule);
+                return info;
+            }
+        } else {
+            throw new RuntimeException("参数错误");
+        }
+        return null;
+    }
+
+    private void buildRuleGoods(Integer rid, Integer productId, Object price, Object number, Integer rule, LitemallP2pRuleGoods ruleGoods) {
+        ruleGoods.setRuleId(rid);
+        ruleGoods.setProductId(productId);
+        ruleGoods.setPrice(new BigDecimal(price.toString()));
+        ruleGoods.setNumber(Integer.parseInt(number.toString()));
+        ruleGoods.setRule(rule);
+        ruleGoods.setCreatedTime(LocalDateTime.now());
+        ruleGoods.setUpdateTime(LocalDateTime.now());
     }
 
     public List<Integer> deleteP2pRules(List<Integer> ids) {
@@ -241,56 +299,63 @@ public class LitemallP2pService {
         List<LitemallP2pRule> p2pRules = p2pRuleMapper.selectByExample(example);
         List<Map<String, Object>> res = new ArrayList<Map<String, Object>>();
         for (LitemallP2pRule p2pRule : p2pRules) {
-            Map<String, Object> info = new HashMap<String, Object>();
-
-            LitemallP2pRuleGoodsExample goodsExample = new LitemallP2pRuleGoodsExample();
-            goodsExample.createCriteria().andRuleIdEqualTo(p2pRule.getId());
-            List<LitemallP2pRuleGoods> ruleGoodsList = p2pRuleGoodsMapper.selectByExampleSelective(goodsExample);
-
-            LitemallGoodsProductExample productExample = new LitemallGoodsProductExample();
-            productExample.createCriteria().andGoodsIdEqualTo(p2pRule.getGoodsId());
-            List<LitemallGoodsProduct> products = litemallGoodsProductMapper.selectByExample(productExample);
-
-            List<Map<String, Object>> ps = new ArrayList<Map<String, Object>>();
-            for (LitemallGoodsProduct gp : products) {
-                Integer id = gp.getId();
-                HashMap<String, Object> product = new HashMap<>();
-                product.put("id", gp.getId());
-                product.put("goodsId", gp.getGoodsId());
-                product.put("specifications", gp.getSpecifications());
-                product.put("price", gp.getPrice());
-                product.put("number", gp.getNumber());
-                product.put("enabled", false);
-                product.put("rule", 0);
-
-                for (LitemallP2pRuleGoods rg : ruleGoodsList) {
-                    if (id.compareTo(rg.getId()) == 0) {
-                        product.remove("price");
-                        product.remove("number");
-                        product.remove("enabled");
-                        product.remove("rule");
-                        product.put("price", rg.getPrice());
-                        product.put("number", rg.getNumber());
-                        product.put("enabled", true);
-                        product.put("rule", rg.getRule());
-                        product.put("ruleId", rg.getRuleId());
-                    }
-                }
-                ps.add(product);
-            }
-            info.put("products", ps);
-            info.put("id", p2pRule.getId());
-            info.put("goodsId", p2pRule.getGoodsId());
-            info.put("goodsName", p2pRule.getGoodsName());
-            info.put("picUrl", p2pRule.getPicUrl());
-            info.put("goodsDesc", p2pRule.getGoodsDesc());
-            info.put("expireTime", p2pRule.getExpireTime());
-            info.put("createdTime", p2pRule.getCreatedTime());
-            info.put("updateTime", p2pRule.getUpdateTime());
-            info.put("status", p2pRule.getStatus());
+            Map<String, Object> info = getRuleInfo(p2pRule);
             res.add(info);
         }
         return res;
+    }
+
+    private Map<String, Object> getRuleInfo(LitemallP2pRule p2pRule) {
+        Map<String, Object> info = new HashMap<String, Object>();
+
+        LitemallP2pRuleGoodsExample goodsExample = new LitemallP2pRuleGoodsExample();
+        goodsExample.createCriteria().andRuleIdEqualTo(p2pRule.getId());
+        List<LitemallP2pRuleGoods> ruleGoodsList = p2pRuleGoodsMapper.selectByExampleSelective(goodsExample);
+
+        LitemallGoodsProductExample productExample = new LitemallGoodsProductExample();
+        productExample.createCriteria().andGoodsIdEqualTo(p2pRule.getGoodsId());
+        List<LitemallGoodsProduct> products = litemallGoodsProductMapper.selectByExample(productExample);
+
+        List<Map<String, Object>> ps = new ArrayList<Map<String, Object>>();
+        for (LitemallGoodsProduct gp : products) {
+            Integer productId = gp.getId();
+            HashMap<String, Object> product = new HashMap<>();
+            product.put("id", productId);
+            product.put("goodsId", gp.getGoodsId());
+            product.put("specifications", gp.getSpecifications());
+            product.put("price", gp.getPrice());
+            product.put("url", gp.getUrl());
+            product.put("number", gp.getNumber());
+            product.put("enabled", false);
+            product.put("rule", 0);
+
+            for (LitemallP2pRuleGoods rg : ruleGoodsList) {
+                if (productId.compareTo(rg.getProductId()) == 0) {
+                    product.remove("price");
+                    product.remove("number");
+                    product.remove("enabled");
+                    product.remove("rule");
+                    product.put("price", rg.getPrice());
+                    product.put("number", rg.getNumber());
+                    product.put("enabled", true);
+                    product.put("rule", rg.getRule());
+                    product.put("ruleId", rg.getRuleId());
+                }
+            }
+            ps.add(product);
+        }
+        info.put("products", ps);
+        info.put("id", p2pRule.getId());
+        info.put("goodsId", p2pRule.getGoodsId());
+        info.put("unit", litemallGoodsMapper.selectByPrimaryKey(p2pRule.getGoodsId()).getUnit());
+        info.put("goodsName", p2pRule.getGoodsName());
+        info.put("picUrl", p2pRule.getPicUrl());
+        info.put("goodsDesc", p2pRule.getGoodsDesc());
+        info.put("expireTime", p2pRule.getExpireTime());
+        info.put("createdTime", p2pRule.getCreatedTime());
+        info.put("updateTime", p2pRule.getUpdateTime());
+        info.put("status", p2pRule.getStatus());
+        return info;
     }
 
     public LitemallP2pRule findById(Integer id) {
