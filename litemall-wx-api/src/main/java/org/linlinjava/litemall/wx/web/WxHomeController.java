@@ -6,10 +6,11 @@ import org.linlinjava.litemall.core.system.SystemConfig;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.domain.LitemallCategory;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
+import org.linlinjava.litemall.db.domain.LitemallGoodsVo;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
 import org.linlinjava.litemall.wx.service.HomeCacheManager;
-import org.linlinjava.litemall.wx.service.WxP2pGrouponRuleService;
+import org.linlinjava.litemall.wx.service.WxP2pRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +49,7 @@ public class WxHomeController {
     private LitemallCategoryService categoryService;
 
     @Autowired
-    private WxP2pGrouponRuleService p2pGrouponRuleService;
+    private WxP2pRuleService wxP2pRuleService;
 
     @Autowired
     private LitemallCouponService couponService;
@@ -103,8 +104,8 @@ public class WxHomeController {
 
         Callable<List> topicListCallable = () -> topicService.queryList(0, SystemConfig.getTopicLimit());
 
-        //团购专区
-        Callable<List> grouponListCallable = () -> p2pGrouponRuleService.queryList(0, 5);
+        //闪购专区
+        Callable<List> p2pListCallable = () -> wxP2pRuleService.queryList(0, 5);
 
         Callable<List> floorGoodsListCallable = this::getCategoryList;
 
@@ -115,7 +116,7 @@ public class WxHomeController {
         FutureTask<List> hotGoodsListTask = new FutureTask<>(hotGoodsListCallable);
         FutureTask<List> brandListTask = new FutureTask<>(brandListCallable);
         FutureTask<List> topicListTask = new FutureTask<>(topicListCallable);
-        FutureTask<List> grouponListTask = new FutureTask<>(grouponListCallable);
+        FutureTask<List> p2pListTask = new FutureTask<>(p2pListCallable);
         FutureTask<List> floorGoodsListTask = new FutureTask<>(floorGoodsListCallable);
 
         executorService.submit(bannerTask);
@@ -125,7 +126,7 @@ public class WxHomeController {
         executorService.submit(hotGoodsListTask);
         executorService.submit(brandListTask);
         executorService.submit(topicListTask);
-        executorService.submit(grouponListTask);
+        executorService.submit(p2pListTask);
         executorService.submit(floorGoodsListTask);
 
         Map<String, Object> entity = new HashMap<>();
@@ -137,7 +138,7 @@ public class WxHomeController {
             entity.put("hotGoodsList", hotGoodsListTask.get());
             entity.put("brandList", brandListTask.get());
             entity.put("topicList", topicListTask.get());
-            entity.put("grouponList", grouponListTask.get());
+            entity.put("p2pList", p2pListTask.get());
             entity.put("floorGoodsList", floorGoodsListTask.get());
             //缓存数据
             HomeCacheManager.loadData(HomeCacheManager.INDEX, entity);
@@ -160,7 +161,7 @@ public class WxHomeController {
                 l2List.add(catL2.getId());
             }
 
-            List<LitemallGoods> categoryGoods;
+            List<LitemallGoodsVo> categoryGoods;
             if (l2List.size() == 0) {
                 categoryGoods = new ArrayList<>();
             } else {

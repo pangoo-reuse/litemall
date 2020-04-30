@@ -11,8 +11,7 @@ import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.db.util.OrderUtil;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
-import org.linlinjava.litemall.wx.service.WxP2pGrouponRuleService;
-import org.linlinjava.litemall.wx.vo.GrouponRuleVo;
+import org.linlinjava.litemall.wx.service.WxP2pRuleService;
 import org.linlinjava.litemall.wx.vo.P2pRuleVa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -37,13 +36,13 @@ import static org.linlinjava.litemall.wx.util.WxResponseCode.*;
 @RestController
 @RequestMapping("/wx/groupon")
 @Validated
-public class WxP2pGrouponController {
-    private final Log logger = LogFactory.getLog(WxP2pGrouponController.class);
+public class WxP2pController {
+    private final Log logger = LogFactory.getLog(WxP2pController.class);
 
     @Autowired
     private LitemallGrouponRulesService rulesService;
     @Autowired
-    private WxP2pGrouponRuleService wxGrouponRuleService;
+    private WxP2pRuleService wxGrouponRuleService;
     @Autowired
     private LitemallGrouponService grouponService;
     @Autowired

@@ -44,7 +44,7 @@ public class AdminGoodsService {
 
     public Object list(Integer goodsId, String goodsSn, String name,
                        Integer page, Integer limit, String sort, String order) {
-        List<LitemallGoods> goodsList = goodsService.querySelective(goodsId, goodsSn, name, page, limit, sort, order);
+        List<LitemallGoodsVo> goodsList = goodsService.querySelective(goodsId, goodsSn, name, page, limit, sort, order);
         return ResponseUtil.okList(goodsList);
     }
 

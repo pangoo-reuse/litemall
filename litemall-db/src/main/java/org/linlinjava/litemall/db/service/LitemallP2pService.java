@@ -3,6 +3,7 @@ package org.linlinjava.litemall.db.service;
 import com.github.pagehelper.PageHelper;
 import org.linlinjava.litemall.db.dao.*;
 import org.linlinjava.litemall.db.domain.*;
+import org.linlinjava.litemall.db.util.P2pConstant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -325,8 +326,8 @@ public class LitemallP2pService {
 
     public List<LitemallP2pRule> queryList(Integer page, Integer limit, String sort, String order) {
         LitemallP2pRuleExample example = new LitemallP2pRuleExample();
-//        example.or().andStateEqualTo(P2pConstant.RULE_STATE_ONLINE).andDeletedEqualTo(false)
-//                .andExpireTimeGreaterThan(LocalDateTime.now());
+        example.or().andStatusEqualTo(P2pConstant.RULE_STATE_ONLINE).andDeletedEqualTo(false)
+                .andExpireTimeGreaterThan(LocalDateTime.now());
         example.setOrderByClause(sort + " " + order);
         PageHelper.startPage(page, limit);
         return p2pRuleMapper.selectByExample(example);
@@ -339,9 +340,9 @@ public class LitemallP2pService {
      * @param goodsId
      * @return
      */
-    public LitemallP2pRule queryByGoodsId(Integer goodsId) {
+    public LitemallP2pRule queryEnableByGoodsId(Integer goodsId) {
         LitemallP2pRuleExample example = new LitemallP2pRuleExample();
-//        example.or().andProductIdEqualTo(goodsId).andStateEqualTo(P2pConstant.RULE_STATE_ONLINE).andDeletedEqualTo(false);
+        example.or().andGoodsIdEqualTo(goodsId).andStatusEqualTo(P2pConstant.RULE_STATE_ONLINE).andDeletedEqualTo(false);
         return p2pRuleMapper.selectOneByExample(example);
     }
 

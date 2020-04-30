@@ -1,10 +1,12 @@
 package org.linlinjava.litemall.db.service;
 
 import com.github.pagehelper.PageHelper;
+import org.linlinjava.litemall.db.dao.CustomSqlMapper;
 import org.linlinjava.litemall.db.dao.LitemallGoodsMapper;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.domain.LitemallGoods.Column;
 import org.linlinjava.litemall.db.domain.LitemallGoodsExample;
+import org.linlinjava.litemall.db.domain.LitemallGoodsVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -19,6 +21,8 @@ public class LitemallGoodsService {
     Column[] columns = new Column[]{Column.id, Column.name, Column.brief, Column.picUrl, Column.isHot, Column.unit,Column.isNew, Column.counterPrice, Column.retailPrice};
     @Resource
     private LitemallGoodsMapper goodsMapper;
+    @Resource
+    private CustomSqlMapper customSqlMapper;
 
     /**
      * 获取热卖商品
@@ -27,13 +31,14 @@ public class LitemallGoodsService {
      * @param limit
      * @return
      */
-    public List<LitemallGoods> queryByHot(int offset, int limit) {
+    public List<LitemallGoodsVo> queryByHot(int offset, int limit) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andIsHotEqualTo(true).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         example.setOrderByClause("add_time desc");
         PageHelper.startPage(offset, limit);
 
-        return goodsMapper.selectByExampleSelective(example, columns);
+        List<LitemallGoods> litemallGoods = goodsMapper.selectByExampleSelective(example, columns);
+        return wrapList(litemallGoods);
     }
 
     /**
@@ -43,13 +48,14 @@ public class LitemallGoodsService {
      * @param limit
      * @return
      */
-    public List<LitemallGoods> queryByNew(int offset, int limit) {
+    public List<LitemallGoodsVo> queryByNew(int offset, int limit) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andIsNewEqualTo(true).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         example.setOrderByClause("add_time desc");
         PageHelper.startPage(offset, limit);
 
-        return goodsMapper.selectByExampleSelective(example, columns);
+        List<LitemallGoods> litemallGoods = goodsMapper.selectByExampleSelective(example, columns);
+        return wrapList(litemallGoods);
     }
 
     /**
@@ -60,13 +66,14 @@ public class LitemallGoodsService {
      * @param limit
      * @return
      */
-    public List<LitemallGoods> queryByCategory(List<Integer> catList, int offset, int limit) {
+    public List<LitemallGoodsVo> queryByCategory(List<Integer> catList, int offset, int limit) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andCategoryIdIn(catList).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         example.setOrderByClause("add_time  desc");
         PageHelper.startPage(offset, limit);
 
-        return goodsMapper.selectByExampleSelective(example, columns);
+        List<LitemallGoods> litemallGoods = goodsMapper.selectByExampleSelective(example, columns);
+        return wrapList(litemallGoods);
     }
 
 
@@ -78,17 +85,19 @@ public class LitemallGoodsService {
      * @param limit
      * @return
      */
-    public List<LitemallGoods> queryByCategory(Integer catId, int offset, int limit) {
+    public List<LitemallGoodsVo> queryByCategory(Integer catId, int offset, int limit) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andCategoryIdEqualTo(catId).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
         example.setOrderByClause("add_time desc");
         PageHelper.startPage(offset, limit);
 
-        return goodsMapper.selectByExampleSelective(example, columns);
+        List<LitemallGoods> litemallGoods = goodsMapper.selectByExampleSelective(example, columns);
+
+        return wrapList(litemallGoods);
     }
 
 
-    public List<LitemallGoods> querySelective(Integer catId, Integer brandId, String keywords, Boolean isHot, Boolean isNew, Integer offset, Integer limit, String sort, String order) {
+    public List<LitemallGoodsVo> querySelective(Integer catId, Integer brandId, String keywords, Boolean isHot, Boolean isNew, Integer offset, Integer limit, String sort, String order) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         LitemallGoodsExample.Criteria criteria1 = example.or();
         LitemallGoodsExample.Criteria criteria2 = example.or();
@@ -123,11 +132,11 @@ public class LitemallGoodsService {
         }
 
         PageHelper.startPage(offset, limit);
-
-        return goodsMapper.selectByExampleSelective(example, columns);
+        List<LitemallGoods> litemallGoods = goodsMapper.selectByExampleSelective(example, columns);
+        return wrapList(litemallGoods);
     }
 
-    public List<LitemallGoods> querySelective(Integer goodsId, String goodsSn, String name, Integer page, Integer size, String sort, String order) {
+    public List<LitemallGoodsVo> querySelective(Integer goodsId, String goodsSn, String name, Integer page, Integer size, String sort, String order) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         LitemallGoodsExample.Criteria criteria = example.createCriteria();
 
@@ -147,7 +156,8 @@ public class LitemallGoodsService {
         }
 
         PageHelper.startPage(page, size);
-        return goodsMapper.selectByExampleWithBLOBs(example);
+        List<LitemallGoods> litemallGoods = goodsMapper.selectByExampleWithBLOBs(example);
+        return wrapList(litemallGoods);
     }
 
     /**
@@ -156,10 +166,10 @@ public class LitemallGoodsService {
      * @param id
      * @return
      */
-    public LitemallGoods findById(Integer id) {
+    public LitemallGoodsVo findById(Integer id) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andIdEqualTo(id).andDeletedEqualTo(false);
-        return goodsMapper.selectOneByExampleWithBLOBs(example);
+        return  wrap(goodsMapper.selectOneByExampleWithBLOBs(example));
     }
 
     /**
@@ -168,10 +178,11 @@ public class LitemallGoodsService {
      * @param id
      * @return
      */
-    public LitemallGoods findByIdVO(Integer id) {
+    public LitemallGoodsVo findByIdVO(Integer id) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andIdEqualTo(id).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
-        return goodsMapper.selectOneByExampleSelective(example, columns);
+
+        return  wrap(goodsMapper.selectOneByExampleSelective(example, columns));
     }
 
 
@@ -252,9 +263,27 @@ public class LitemallGoodsService {
         return goodsMapper.countByExample(example) != 0;
     }
 
-    public List<LitemallGoods> queryByIds(Integer[] ids) {
+    public List<LitemallGoodsVo> queryByIds(Integer[] ids) {
         LitemallGoodsExample example = new LitemallGoodsExample();
         example.or().andIdIn(Arrays.asList(ids)).andIsOnSaleEqualTo(true).andDeletedEqualTo(false);
-        return goodsMapper.selectByExampleSelective(example, columns);
+        return wrapList(goodsMapper.selectByExampleSelective(example, columns));
+    }
+
+    private List<LitemallGoodsVo> wrapList(List<LitemallGoods> goodsList){
+        List<LitemallGoodsVo> goodsVos = new ArrayList<>();
+        for (LitemallGoods goods : goodsList) {
+            Integer id = goods.getId();
+            boolean exist = customSqlMapper.existP2pRuleCount(id) > 0;
+            LitemallGoodsVo goodsVo = LitemallGoodsVo.build(goods, exist);
+            if (!exist)
+            goodsVos.add(goodsVo);
+        }
+        return  goodsVos;
+    }
+    private LitemallGoodsVo wrap(LitemallGoods  goods){
+        Integer id = goods.getId();
+        boolean exist = customSqlMapper.existP2pRuleCount(id) > 0;
+        LitemallGoodsVo goodsVo = LitemallGoodsVo.build(goods, exist);
+        return  goodsVo;
     }
 }

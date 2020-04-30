@@ -2,7 +2,6 @@ package org.linlinjava.litemall.wx.web;
 
 import com.github.pagehelper.PageInfo;
 import com.mysql.jdbc.StringUtils;
-import com.sun.org.apache.xerces.internal.xs.StringList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.system.SystemConfig;
@@ -155,7 +154,7 @@ public class WxGoodsController {
         };
 
         //闪购信息
-        Callable<LitemallP2pRule> p2pRulesCallable = () -> litemallP2pService.queryByGoodsId(id);
+        Callable<LitemallP2pRule> p2pRulesCallable = () -> litemallP2pService.queryEnableByGoodsId(id);
 
         // 用户收藏
         int userHasCollect = 0;
@@ -321,7 +320,7 @@ public class WxGoodsController {
         }
 
         //查询列表数据
-        List<LitemallGoods> goodsList = goodsService.querySelective(categoryId, brandId, keyword, isHot, isNew, page, limit, sort, order);
+        List<LitemallGoodsVo> goodsList = goodsService.querySelective(categoryId, brandId, keyword, isHot, isNew, page, limit, sort, order);
 
         // 查询商品所属类目列表。
         List<Integer> goodsCatIds = goodsService.getCatIds(brandId, keyword, isHot, isNew);
@@ -332,7 +331,7 @@ public class WxGoodsController {
             categoryList = new ArrayList<>(0);
         }
 
-        PageInfo<LitemallGoods> pagedList = PageInfo.of(goodsList);
+        PageInfo<LitemallGoodsVo> pagedList = PageInfo.of(goodsList);
 
         Map<String, Object> entity = new HashMap<>();
         entity.put("list", goodsList);
@@ -364,7 +363,7 @@ public class WxGoodsController {
 
         // 查找六个相关商品
         int related = 6;
-        List<LitemallGoods> goodsList = goodsService.queryByCategory(cid, 0, related);
+        List<LitemallGoodsVo> goodsList = goodsService.queryByCategory(cid, 0, related);
         return ResponseUtil.okList(goodsList);
     }
 

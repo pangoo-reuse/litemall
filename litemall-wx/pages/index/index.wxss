@@ -76,7 +76,8 @@
   font-size: 33rpx;
   line-height: 36rpx;
 }
-.title{
+
+.title {
   /* padding-right: 30rpx; */
   /* background-size: 16.656rpx 27rpx;
   display: inline-block; */
@@ -86,6 +87,7 @@
   margin-top: 38rpx;
   margin-bottom: 38rpx;
 }
+
 .placeholder {
   color: transparent;
   font-size: 28rpx;
@@ -94,7 +96,7 @@
   margin-bottom: 38rpx;
 }
 
-.more{
+.more {
   color: grey;
   font-size: 28rpx;
   padding-right: 34rpx;
@@ -258,6 +260,7 @@
   background-color: #fcfcfc;
 
 }
+
 .a-groupon .ava {
   color: #d6ac50;
   font-size: 25rpx;
@@ -375,6 +378,11 @@
   font-size: 30rpx;
   color: #ab956d;
 }
+
+
+/* .img {
+  background-color: #fcfcfc !important;
+} */
 
 .a-popular {
   width: 750rpx;

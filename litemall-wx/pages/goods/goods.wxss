@@ -195,7 +195,11 @@
   font-size: 25rpx;
   margin: 0 10rpx;
 }
-
+.avg{
+  color: #a78845;
+  font-size: 24rpx;
+  font-weight: 100;
+}
 .section-act .text {
   display: flex;
   align-items: center;

@@ -29,13 +29,13 @@ Page({
     return {
       title: '邀请团购',
       desc: '唯爱与美食不可辜负',
-      path: '/pages/index/index?grouponId=' + this.data.id
+      path: '/pages/index/index?ruleId=' + this.data.id
     }
   },
   getOrderDetail: function() {
     let that = this;
     util.request(api.GroupOnDetail, {
-      grouponId: that.data.id
+      ruleId: that.data.id
     }).then(function(res) {
       if (res.errno === 0) {
         let _steps = [{

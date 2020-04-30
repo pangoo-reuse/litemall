@@ -10,6 +10,7 @@ import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.core.validator.Order;
 import org.linlinjava.litemall.core.validator.Sort;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
+import org.linlinjava.litemall.db.domain.LitemallGoodsVo;
 import org.linlinjava.litemall.db.domain.LitemallTopic;
 import org.linlinjava.litemall.db.service.LitemallGoodsService;
 import org.linlinjava.litemall.db.service.LitemallTopicService;
@@ -82,7 +83,7 @@ public class AdminTopicController {
     public Object read(@NotNull Integer id) {
         LitemallTopic topic = topicService.findById(id);
         Integer[] goodsIds = topic.getGoods();
-        List<LitemallGoods> goodsList = null;
+        List<LitemallGoodsVo> goodsList = null;
         if (goodsIds == null || goodsIds.length == 0) {
             goodsList = new ArrayList<>();
         } else {

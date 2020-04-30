@@ -22,11 +22,11 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
-public class WxP2pGrouponRuleService {
-    private final Log logger = LogFactory.getLog(WxP2pGrouponRuleService.class);
+public class WxP2pRuleService {
+    private final Log logger = LogFactory.getLog(WxP2pRuleService.class);
 
     @Autowired
-    private LitemallP2pService grouponRulesService;
+    private LitemallP2pService p2pRuleService;
     @Resource
     private LitemallP2pRuleGoodsMapper litemallP2pRuleGoodsMapper;
     @Resource
@@ -43,7 +43,7 @@ public class WxP2pGrouponRuleService {
 
 
     public List<P2pRuleVa> queryList(Integer page, Integer size, String sort, String order) {
-        Page<LitemallP2pRule> grouponRulesList = (Page<LitemallP2pRule>) grouponRulesService.queryList(page, size, sort, order);
+        Page<LitemallP2pRule> grouponRulesList = (Page<LitemallP2pRule>) p2pRuleService.queryList(page, size, sort, order);
 //
         Page<P2pRuleVa> grouponList = new Page<P2pRuleVa>();
         grouponList.setPages(grouponRulesList.getPages());

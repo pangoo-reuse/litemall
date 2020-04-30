@@ -27,7 +27,7 @@ Page({
     openShare: false,
     collect: false,
     shareImage: '',
-    isP2P: false, //标识是否是一个闪购
+    ruleId: 0, //标识是否是一个闪购
     p2pPrice: 0.0,
     p2pPricesList: [],
     soldout: false,
@@ -112,22 +112,6 @@ Page({
     })
   },
 
-  // //从分享的团购进入
-  // getGrouponInfo: function (grouponId) {
-  //   let that = this;
-  //   util.request(api.GroupOnJoin, {
-  //     grouponId: grouponId
-  //   }).then(function (res) {
-  //     if (res.errno === 0) {
-  //       that.setData({
-  //         grouponLink: res.data.groupon,
-  //         id: res.data.goods.id
-  //       });
-  //       //获取商品详情
-  //       that.getGoodsInfo();
-  //     }
-  //   });
-  // },
 
   // 获取商品信息
   getGoodsInfo: function () {
@@ -175,16 +159,9 @@ Page({
           canShare: res.data.share,
           shippingInfo: res.data.shippingInfo,
           p2pPricesList: res.data.p2p.prices,
+          ruleId:res.data.p2p.ruleId,
         });
 
-        //如果是通过分享的团购参加团购，则团购项目应该与分享的一致并且不可更改
-        if (that.data.isP2P) {
-          let groupons = that.data.groupon;
-          console.log(res.data)
-          that.setData({
-            groupon: groupons
-          });
-        }
 
         if (res.data.userHasCollect == 1) {
           that.setData({
@@ -217,36 +194,7 @@ Page({
     });
   },
 
-  // 团购选择
-  clickGroupon: function (event) {
-    let that = this;
-
-    //参与团购，不可更改选择
-    if (that.data.isP2P) {
-      return;
-    }
-
-    let specName = event.currentTarget.dataset.name;
-    let specValueId = event.currentTarget.dataset.valueId;
-
-    let _grouponList = this.data.groupon;
-    for (let i = 0; i < _grouponList.length; i++) {
-      if (_grouponList[i].id == specValueId) {
-        if (_grouponList[i].checked) {
-          _grouponList[i].checked = false;
-        } else {
-          _grouponList[i].checked = true;
-        }
-      } else {
-        _grouponList[i].checked = false;
-      }
-    }
-
-    this.setData({
-      groupon: _grouponList,
-    });
-  },
-
+ 
   // 规格选择
   clickSkuValue: function (event) {
     let that = this;
@@ -448,12 +396,6 @@ Page({
       this.getGoodsInfo();
     }
 
-    if (options.grouponId) {
-      this.setData({
-        isP2P: true,
-      });
-      this.getGrouponInfo(options.grouponId);
-    }
 
     wx.getSetting({
       success: function (res) {
@@ -548,10 +490,7 @@ Page({
         return false;
       }
 
-      //验证团购是否有效
-      let checkedGroupon = this.getCheckedGrouponValue();
-
-      //立即购买
+        //立即购买
       util.request(api.CartFastAdd, {
         goodsId: this.data.goods.id,
         number: this.data.number,

@@ -2,7 +2,7 @@
 	<scroll-view class="groupon-list" scroll-y="true" scroll-top="{{scrollTop}}">
 
 		<view class="item" wx:for="{{grouponList}}" wx:for-index="index" wx:for-item="item" wx:key="id">
-			<navigator url="/pages/goods/goods?id={{item.goodsId}}&grouponId={{item.id}}">
+			<navigator url="/pages/goods/goods?id={{item.goodsId}}&ruleId={{item.id}}">
 				<custom-flex main="around" cross="center">
 					<view>
 						<image class="img" lazy-load fit="contain" src="{{item.picUrl}}" />
@@ -15,9 +15,7 @@
 						<van-row>
 							<text class="desc">{{item.brief}}</text>
 						</van-row>
-						<van-row>
-							<text class="ava">当前均价￥{{item.avaPrice}}</text>
-						</van-row>
+
 						<van-row>
 							<custom-flex cross="center" main='between'>
 								<van-tag size='medium' text-color type="warning">

@@ -9,6 +9,7 @@ import org.linlinjava.litemall.core.validator.Order;
 import org.linlinjava.litemall.core.validator.Sort;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.domain.LitemallGoodsProduct;
+import org.linlinjava.litemall.db.domain.LitemallGoodsVo;
 import org.linlinjava.litemall.db.domain.LitemallP2pRule;
 import org.linlinjava.litemall.db.service.LitemallGoodsProductService;
 import org.linlinjava.litemall.db.service.LitemallGoodsService;
@@ -48,7 +49,7 @@ public class AdminP2pRuleController {
     }
     @GetMapping("/queryGoods")
     public Object queryGoods(@NotNull  String keywords) {
-        List<LitemallGoods> goodsList = litemallGoodsService.querySelective(null,null,keywords,null,null,0,50,null,null);
+        List<LitemallGoodsVo> goodsList = litemallGoodsService.querySelective(null,null,keywords,null,null,0,50,null,null);
         return ResponseUtil.okList(goodsList);
     }
     @GetMapping("/queryGoodsProduct")

@@ -455,7 +455,12 @@ public class WxOrderService {
             LitemallGoodsProduct product = productService.findById(productId);
 //            Integer rule = ruleGoods.getRule();
             Integer number = product.getNumber();
-            if (productSaleCount >= number) return ResponseUtil.fail(4041,"当前产品人数已满或已下线");
+            if (productSaleCount >= number) {
+                LitemallP2pRule p2pRule = litemallP2pRuleMapper.selectByPrimaryKey(ruleId);
+                p2pRule.setStatus(false);
+                litemallP2pRuleMapper.updateByPrimaryKeySelective(p2pRule);
+                return ResponseUtil.fail(4041,"当前产品人数已满或已下线");
+            }
 
             BigDecimal originPrice = product.getPrice();
             BigDecimal currentPrice = P2pUtil.getCurrentPrice(productSaleCount, originPrice.doubleValue(), price.doubleValue(), number);
