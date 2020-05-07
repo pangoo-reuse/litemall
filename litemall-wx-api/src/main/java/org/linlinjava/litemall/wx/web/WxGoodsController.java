@@ -102,7 +102,7 @@ public class WxGoodsController {
     @GetMapping("detail")
     public Object detail(@LoginUser Integer userId, @NotNull Integer id, @NotNull String regionCode/*zipCode*/, @NotNull String cityZipCode) {
         // 商品信息
-        LitemallGoods goods = goodsService.findById(id);
+        LitemallGoodsVo goods = goodsService.findById(id);
 
         // 商品属性
         Callable<List> goodsAttributeListCallable = () -> goodsAttributeService.queryByGid(id);
@@ -209,22 +209,22 @@ public class WxGoodsController {
             HashMap<String, Object> p2p = new HashMap<String, Object>();
             LitemallP2pRule p2pRule = p2pRuleTask.get();
             List<Map<Integer, BigDecimal>> currents = new ArrayList<Map<Integer, BigDecimal>>();
-            if (p2pRule != null && p2pRule.getGoodsId().compareTo(goods.getId()) == 0) {
-                p2p.put("ruleId",p2pRule.getId());
-                // 证明这是一个闪购
-                List<LitemallGoodsProduct> products = productService.queryByGid(goods.getId());
-                for (LitemallGoodsProduct product : products) {
-                    Integer productId = product.getId();
+            if (goods.isP2p())
+                if (p2pRule != null && p2pRule.getGoodsId().compareTo(goods.getId()) == 0) {
+                    p2p.put("ruleId", p2pRule.getId());
+                    // 证明这是一个闪购
+                    List<LitemallGoodsProduct> products = productService.queryByGid(goods.getId());
+                    for (LitemallGoodsProduct product : products) {
+                        Integer productId = product.getId();
 
-                    BigDecimal currentPrice = wxOrderService.getCurrentPrice(productId, p2pRule.getId());
-                    HashMap<Integer, BigDecimal> map = new HashMap<Integer, BigDecimal>();
-                    map.put(productId, currentPrice);
-                    currents.add(map);
+                        BigDecimal currentPrice = wxOrderService.getCurrentPrice(productId, p2pRule.getId());
+                        HashMap<Integer, BigDecimal> map = new HashMap<Integer, BigDecimal>();
+                        map.put(productId, currentPrice);
+                        currents.add(map);
+                    }
+                    p2p.put("prices", currents);
+
                 }
-                p2p.put("prices",currents);
-
-            }
-
 
 
             data.put("info", goods);

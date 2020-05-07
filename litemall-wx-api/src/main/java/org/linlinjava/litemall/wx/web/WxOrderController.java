@@ -69,11 +69,6 @@ public class WxOrderController {
         return wxOrderService.submit(userId, body);
     }
 
-    @PostMapping("submitP2pOrder")
-    public Object submitP2pOrder(@LoginUser Integer userId, @RequestBody String body) {
-        return wxOrderService.submitP2pOrder(userId, body);
-    }
-
     /**
      * 取消订单
      *

@@ -503,7 +503,7 @@ Page({
             try {
               wx.setStorageSync('cartId', res.data);
               wx.navigateTo({
-                url: '/pages/checkout/checkout'
+                url: '/pages/checkout/checkout?ruleId='+that.data.ruleId
               })
             } catch (e) { }
 

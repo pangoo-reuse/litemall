@@ -1,9 +1,12 @@
 package org.linlinjava.litemall.db.service;
 
 import com.github.pagehelper.PageHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.linlinjava.litemall.db.dao.*;
 import org.linlinjava.litemall.db.domain.*;
-import org.linlinjava.litemall.db.util.P2pConstant;
+import org.linlinjava.litemall.db.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,6 +25,7 @@ import static java.time.temporal.ChronoField.*;
 
 @Service
 public class LitemallP2pService {
+    Logger logger = LogManager.getLogger(LitemallP2pService.class);
     @Resource
     private LitemallP2pRuleMapper p2pRuleMapper;
     @Resource
@@ -33,6 +37,14 @@ public class LitemallP2pService {
     private LitemallOrderMapper litemallOrderMapper;
     @Resource
     private LitemallGoodsMapper litemallGoodsMapper;
+
+    @Autowired
+    private LitemallOrderService orderService;
+
+    @Autowired
+    private LitemallAftersaleService aftersaleService;
+    @Autowired
+    private LitemallOrderGoodsService litemallOrderGoodsService;
     @Resource
     private LitemallGoodsProductMapper litemallGoodsProductMapper;
     private DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
@@ -112,12 +124,13 @@ public class LitemallP2pService {
                 Integer remoteGoodsId = (Integer) product.getOrDefault("goodsId", 0);
                 Object price = product.getOrDefault("price", "0.00");
                 Integer rule = (Integer) product.getOrDefault("rule", 0);
+                Object number = product.getOrDefault("number", "0");
                 LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
                 ruleGoodsExample.createCriteria().andRuleIdEqualTo(rid).andProductIdEqualTo(productId);
                 LitemallP2pRuleGoods ruleGoods = p2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
                 if (goodsId.compareTo(remoteGoodsId) == 0) {
                     ruleGoods = new LitemallP2pRuleGoods();
-                    buildRuleGoods(rid, productId, price, rule, ruleGoods);
+                    buildRuleGoods(rid, productId, price, rule,Integer.valueOf(number.toString()) ,ruleGoods);
                     p2pRuleGoodsMapper.insertSelective(ruleGoods);
                     ruleGoodsList.add(ruleGoods);
                 }
@@ -177,7 +190,7 @@ public class LitemallP2pService {
                 if (ruleId == -1) {
                     // 表示新加的
                     LitemallP2pRuleGoods ruleGoods = new LitemallP2pRuleGoods();
-                    buildRuleGoods(rid, productId, price,  rule, ruleGoods);
+                    buildRuleGoods(rid, productId, price, rule,Integer.valueOf(number.toString()), ruleGoods);
                     p2pRuleGoodsMapper.insertSelective(ruleGoods);
                     ruleGoodsList.add(ruleGoods);
                 } else {
@@ -187,6 +200,7 @@ public class LitemallP2pService {
 
                     ruleGoods.setPrice(new BigDecimal(price.toString()));
                     ruleGoods.setRule(rule);
+                    ruleGoods.setCount(Integer.valueOf(number.toString()));
                     ruleGoods.setUpdateTime(LocalDateTime.now());
                     p2pRuleGoodsMapper.updateByPrimaryKeySelective(ruleGoods);
                     ruleGoodsList.add(ruleGoods);
@@ -208,13 +222,14 @@ public class LitemallP2pService {
         return null;
     }
 
-    private void buildRuleGoods(Integer rid, Integer productId, Object price,Integer rule, LitemallP2pRuleGoods ruleGoods) {
+    private void buildRuleGoods(Integer rid, Integer productId, Object price, Integer rule,Integer count, LitemallP2pRuleGoods ruleGoods) {
         ruleGoods.setRuleId(rid);
         ruleGoods.setProductId(productId);
         ruleGoods.setPrice(new BigDecimal(price.toString()));
         ruleGoods.setRule(rule);
         ruleGoods.setCreatedTime(LocalDateTime.now());
         ruleGoods.setUpdateTime(LocalDateTime.now());
+        ruleGoods.setCount(count);
     }
 
     @Transactional
@@ -363,4 +378,77 @@ public class LitemallP2pService {
         return map;
     }
 
+    public List<LitemallOrder> findAllCompleted() {
+        LitemallOrderExample orderExample = new LitemallOrderExample();
+        orderExample.createCriteria().andP2pOrderEqualTo(true).andOrderStatusEqualTo(OrderUtil.STATUS_PAY);
+        List<LitemallOrder> orders = litemallOrderMapper.selectByExample(orderExample);
+        return orders;
+    }
+
+    public void updateRefund(Integer orderId, Integer userId) {
+
+        LitemallOrder order = orderService.findById(userId, orderId);
+        if (order != null && order.getUserId().equals(userId)) {
+            // 进一步验证
+            if (OrderUtil.isConfirmStatus(order) || OrderUtil.isAutoConfirmStatus(order)) {
+
+            }
+            // 订单必须完成才能进入售后流程。
+
+            BigDecimal amount = order.getActualPrice().subtract(order.getFreightPrice());
+            if (BigDecimal.ZERO.compareTo(amount) > 0) {
+                logger.info("扣除运费后不足以退款");
+            }
+            Short afterStatus = order.getAftersaleStatus();
+            if (afterStatus.equals(AftersaleConstant.STATUS_RECEPT) || afterStatus.equals(AftersaleConstant.STATUS_REFUND)) {
+                logger.info("已申请过退款");
+            }
+
+            // 如果有旧的售后记录则删除（例如用户已取消，管理员拒绝）
+            aftersaleService.deleteByOrderId(userId, orderId);
+            LitemallAftersale aftersale = new LitemallAftersale();
+            aftersale.setStatus(AftersaleConstant.STATUS_REQUEST);
+            aftersale.setAftersaleSn(aftersaleService.generateAftersaleSn(userId));
+            aftersale.setUserId(userId);
+            aftersale.setComment("闪购活动返现");
+            aftersale.setType(Short.parseShort("3"));
+            aftersale.setAddTime(LocalDateTime.now());
+            aftersale.setUpdateTime(LocalDateTime.now());
+            BigDecimal returnAmount = parseAmount(order,aftersale);
+            aftersale.setAmount(returnAmount);
+            aftersale.setUserId(userId);
+            aftersale.setOrderId(orderId);
+
+
+            aftersaleService.add(aftersale);
+
+            // 订单的aftersale_status和售后记录的status是一致的。
+            orderService.updateAftersaleStatus(orderId, AftersaleConstant.STATUS_REQUEST);
+        }
+
+
+    }
+
+    private BigDecimal parseAmount(LitemallOrder order,LitemallAftersale aftersale) {
+        List<LitemallOrderGoods> goodsList = litemallOrderGoodsService.queryByOid(order.getId());
+        if (goodsList != null && goodsList.size() == 1) {
+            LitemallOrderGoods goods = goodsList.get(0);
+            Integer productId = goods.getProductId();
+            LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
+            ruleGoodsExample.createCriteria().andProductIdEqualTo(productId);
+            LitemallP2pRuleGoods ruleGoods = p2pRuleGoodsMapper.selectOneByExample(ruleGoodsExample);
+            if (ruleGoods != null) {
+                Integer ruleId = ruleGoods.getRuleId();
+                LitemallP2pRule p2pRule = p2pRuleMapper.selectByPrimaryKey(ruleId);
+                if (p2pRule != null) {
+                    int orderCount = customSqlMapper.orderP2pCountByProductId(productId);
+                    BigDecimal currentPrice = P2pUtil.getCurrentPrice(orderCount, goods.getPrice().doubleValue(), ruleGoods.getPrice().doubleValue(), ruleGoods.getCount());
+                    aftersale.setReason("【"+goods.getGoodsName()+"】原价:"+ order.getGoodsPrice()+",最低售价："+ruleGoods.getPrice()+",均价："+ currentPrice+",订单数："+ orderCount+",总数："+ ruleGoods.getCount());
+                    return order.getGoodsPrice().subtract(currentPrice);
+                }
+
+            }
+        }
+        return BigDecimal.ZERO;
+    }
 }

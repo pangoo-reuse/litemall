@@ -36,6 +36,7 @@ public class P2pUtil {
     }
 
     public static BigDecimal getCurrentPrice(int orderCount, double originPrice, double minPrice, int maxPiece) {
+        test(orderCount, originPrice, minPrice, maxPiece);
         return BigDecimal.valueOf(originPrice - (originPrice - minPrice) / maxPiece * orderCount).divide(BigDecimal.ONE,2, RoundingMode.HALF_UP);
     }
 }

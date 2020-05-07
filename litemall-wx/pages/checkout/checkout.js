@@ -19,13 +19,15 @@ Page({
     couponId: 0,
     userCouponId: 0,
     message: '',
-    grouponLinkId: 0, //参与的团购
-    grouponRulesId: 0,//团购规则ID
+    ruleId: 0,//团购规则ID
     selfReferralCode: '',
     uid: 0,
   },
   onLoad: function (options) {
     // 页面初始化 options为页面跳转所带来的参数
+    this.setData({
+      ruleId: options.ruleId
+    })
   },
 
   //获取checkou信息
@@ -36,7 +38,7 @@ Page({
       addressId: that.data.addressId,
       couponId: that.data.couponId,
       userCouponId: that.data.userCouponId,
-      grouponRulesId: that.data.grouponRulesId
+      ruleId: that.data.ruleId
     }).then(function (res) {
       if (res.errno === 0) {
         console.log(res.data)
@@ -53,7 +55,6 @@ Page({
           addressId: res.data.addressId,
           couponId: res.data.couponId,
           userCouponId: res.data.userCouponId,
-          grouponRulesId: res.data.grouponRulesId,
         });
       }
       wx.hideLoading();
@@ -65,6 +66,13 @@ Page({
     })
   },
   selectCoupon() {
+    if(this.data.ruleId > 0){ 
+      wx.showToast({
+        title: '优惠券不可用',
+        icon:'none'
+      })
+      return;
+    }
     wx.navigateTo({
       url: '/pages/ucenter/couponSelect/couponSelect',
     })
@@ -145,6 +153,7 @@ Page({
   },
   submitOrder: function () {
     var that = this;
+
     if (this.data.addressId <= 0) {
       util.showErrorToast('请选择收货地址');
       return false;
@@ -155,8 +164,7 @@ Page({
       couponId: this.data.couponId,
       userCouponId: this.data.userCouponId,
       message: this.data.message,
-      grouponRulesId: this.data.grouponRulesId,
-      grouponLinkId: this.data.grouponLinkId
+      ruleId: this.data.ruleId,
     }, 'POST').then(res => {
       if (res.errno === 0) {
 

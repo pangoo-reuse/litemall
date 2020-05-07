@@ -33,7 +33,7 @@ public interface CustomSqlMapper {
 //      <include refid="Example_Where_Clause" />
 //    </if>
 //  </select>
-    @Select("select count(*) from litemall_order_goods ogd left join litemall_order o on ( ogd.order_id = o.id) where ogd.product_id = #{productId,jdbcType=INTEGER}  and o.is_p2p_order = 1 ")
+    @Select("select count(*) from litemall_order_goods ogd left join litemall_order o on ( ogd.order_id = o.id) where ogd.product_id = #{productId,jdbcType=INTEGER}  and o.p2p_order = 1 ")
     int orderP2pCountByProductId(Integer productId);
 
     @Select("select count(*) from litemall_p2p_rule where goods_id = #{goodsId,jdbcType=INTEGER} and status = 1 and expire_time > NOW()")

@@ -23,6 +23,7 @@ import org.linlinjava.litemall.core.util.DateTimeUtil;
 import org.linlinjava.litemall.core.util.JacksonUtil;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.dao.CustomSqlMapper;
+import org.linlinjava.litemall.db.dao.LitemallOrderMapper;
 import org.linlinjava.litemall.db.dao.LitemallP2pRuleGoodsMapper;
 import org.linlinjava.litemall.db.dao.LitemallP2pRuleMapper;
 import org.linlinjava.litemall.db.domain.*;
@@ -115,6 +116,9 @@ public class WxOrderService {
 
     @Autowired
     private ReferrerService referrerService;
+
+    @Autowired
+    private LitemallP2pService p2pService;
     @Resource
     private CustomSqlMapper customSqlMapper;
 
@@ -122,6 +126,8 @@ public class WxOrderService {
     private LitemallP2pRuleGoodsMapper litemallP2pRuleGoodsMapper;
     @Resource
     private LitemallP2pRuleMapper litemallP2pRuleMapper;
+    @Resource
+    private LitemallOrderMapper litemallOrderMapper;
 
     /**
      * 订单列表
@@ -264,6 +270,7 @@ public class WxOrderService {
         if (body == null) {
             return ResponseUtil.badArgument();
         }
+        Integer ruleId = JacksonUtil.parseInteger(body, "ruleId");
         Integer cartId = JacksonUtil.parseInteger(body, "cartId");
         Integer addressId = JacksonUtil.parseInteger(body, "addressId");
         Integer couponId = JacksonUtil.parseInteger(body, "couponId");
@@ -338,7 +345,38 @@ public class WxOrderService {
         BigDecimal orderTotalPrice = checkedGoodsPrice.add(freightPrice).subtract(couponPrice).max(new BigDecimal(0));
         // 最终支付费用
         BigDecimal actualPrice = orderTotalPrice.subtract(integralPrice);
+        // 是否闪购订单
+        if (ruleId != null && ruleId > 0) {
+            LitemallCart cart = checkedGoodsList.get(0);
 
+            Integer productId = cart.getProductId();
+            LitemallP2pRuleExample ruleExample = new LitemallP2pRuleExample();
+            ruleExample.createCriteria().andIdEqualTo(ruleId).andExpireTimeGreaterThan(LocalDateTime.now()).andStatusEqualTo(true);
+            boolean ruleEnable = litemallP2pRuleMapper.countByExample(ruleExample) > 0;
+            if (!ruleEnable) return ResponseUtil.fail(121212,"当前活动已下线");
+
+
+            // 计算当前商品的价格
+            int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId);// 当前产品的闪购订单已卖出多少件
+            LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
+            ruleGoodsExample.createCriteria().andProductIdEqualTo(productId).andRuleIdEqualTo(ruleId);
+            LitemallP2pRuleGoods ruleGoods = litemallP2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
+            if (ruleGoods != null) {
+                BigDecimal price = ruleGoods.getPrice();
+                LitemallGoodsProduct product = productService.findById(productId);
+//            Integer rule = ruleGoods.getRule();
+                Integer number = product.getNumber();
+                if (productSaleCount >= number||productSaleCount >ruleGoods.getCount()) {
+                    LitemallP2pRule p2pRule = litemallP2pRuleMapper.selectByPrimaryKey(ruleId);
+                    p2pRule.setStatus(false);
+                    litemallP2pRuleMapper.updateByPrimaryKeySelective(p2pRule);
+                    return ResponseUtil.fail(121213,"当前产品人数已满或已下线");
+                }
+
+
+            }
+
+        }
         Integer orderId = null;
         LitemallOrder order = null;
         // 订单
@@ -378,8 +416,14 @@ public class WxOrderService {
             orderGoods.setNumber(cartGoods.getNumber());
             orderGoods.setSpecifications(cartGoods.getSpecifications());
             orderGoods.setAddTime(LocalDateTime.now());
-
+            if (ruleId != null && ruleId > 0) {
+                // 是否闪购订单
+                order.setP2pOrder(true);
+                orderService.updateWithOptimisticLocker(order);
+            }
             orderGoodsService.add(orderGoods);
+
+
         }
 
         // 删除购物车里面的商品信息
@@ -389,6 +433,7 @@ public class WxOrderService {
         for (LitemallCart checkGoods : checkedGoodsList) {
             Integer productId = checkGoods.getProductId();
             LitemallGoodsProduct product = productService.findById(productId);
+
 
             int remainNumber = product.getNumber() - checkGoods.getNumber();
             if (remainNumber < 0) {
@@ -417,149 +462,8 @@ public class WxOrderService {
         return ResponseUtil.ok(data);
     }
 
-    @Transactional
-    public Object submitP2pOrder(Integer userId, String body) {
-        Integer ruleId = JacksonUtil.parseInteger(body, "ruleId");
-        Integer productId = JacksonUtil.parseInteger(body, "productId");
-        Integer productCount = JacksonUtil.parseInteger(body, "productCount");
-        Integer addressId = JacksonUtil.parseInteger(body, "addressId");
-        String message = JacksonUtil.parseString(body, "message");
-        if (userId == null) {
-            return ResponseUtil.unlogin();
-        }
-        if (body == null) {
-            return ResponseUtil.badArgument();
-        }
 
-        if (addressId == null) {
-            return ResponseUtil.badArgument();
-        }
-        LitemallP2pRuleExample ruleExample = new LitemallP2pRuleExample();
-        ruleExample.createCriteria().andIdEqualTo(ruleId).andExpireTimeLessThan(LocalDateTime.now()).andStatusEqualTo(true);
-        boolean ruleEnable = litemallP2pRuleMapper.countByExample(ruleExample) > 0;
-        if (!ruleEnable) throw new RuntimeException("当前活动已下线");
-
-        // 收货地址
-        LitemallAddress checkedAddress = addressService.query(userId, addressId);
-        if (checkedAddress == null) {
-            return ResponseUtil.badArgument();
-        }
-
-        // 计算当前商品的价格
-        int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId);// 当前产品的闪购订单已卖出多少件
-        LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
-        ruleGoodsExample.createCriteria().andProductIdEqualTo(productId).andRuleIdEqualTo(ruleId);
-        LitemallP2pRuleGoods ruleGoods = litemallP2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
-        if (ruleGoods != null){
-            BigDecimal price = ruleGoods.getPrice();
-            LitemallGoodsProduct product = productService.findById(productId);
-//            Integer rule = ruleGoods.getRule();
-            Integer number = product.getNumber();
-            if (productSaleCount >= number) {
-                LitemallP2pRule p2pRule = litemallP2pRuleMapper.selectByPrimaryKey(ruleId);
-                p2pRule.setStatus(false);
-                litemallP2pRuleMapper.updateByPrimaryKeySelective(p2pRule);
-                return ResponseUtil.fail(4041,"当前产品人数已满或已下线");
-            }
-
-            BigDecimal originPrice = product.getPrice();
-            BigDecimal currentPrice = P2pUtil.getCurrentPrice(productSaleCount, originPrice.doubleValue(), price.doubleValue(), number);
-
-            // 根据订单商品总价计算运费，满足条件（例如88元）则免运费，否则需要支付运费（例如8元）；
-            //<p> 更新运费到运费模板模式 ， 废弃原有的只能设置全局一种运费模式</p>
-            // 如果发现运费模板则采用运费模板，否则采用系统预置的满减规则
-
-            String areaCode = checkedAddress.getAreaCode();
-            LitemallShippingConfig shippingConfig = shippingConfigService.findByAreaCode(areaCode);
-            // 根据订单商品总价计算运费，满88则免运费，否则8元；
-            BigDecimal freightPrice = new BigDecimal(0.00);
-            if (shippingConfig != null) {
-                if (currentPrice.compareTo(shippingConfig.getExpressFreightMin()) < 0) {
-                    freightPrice = shippingConfig.getFreightValue();
-                }
-            } else {
-                if (currentPrice.compareTo(SystemConfig.getFreightLimit()) < 0) {
-                    freightPrice = SystemConfig.getFreight();
-                }
-            }
-
-
-            // 可以使用的其他钱，例如用户积分
-            BigDecimal integralPrice = new BigDecimal(0);
-
-            // 订单费用
-            BigDecimal orderTotalPrice = currentPrice.add(freightPrice).max(new BigDecimal(0));
-            // 最终支付费用
-            BigDecimal actualPrice = orderTotalPrice.subtract(integralPrice);
-
-            Integer orderId = null;
-            LitemallOrder order = null;
-            // 订单
-            order = new LitemallOrder();
-            order.setUserId(userId);
-            order.setOrderSn(orderService.generateOrderSn(userId));
-            order.setOrderStatus(OrderUtil.STATUS_CREATE);
-            order.setConsignee(checkedAddress.getName());
-            order.setMobile(checkedAddress.getTel());
-            order.setMessage(message);
-            String detailedAddress = checkedAddress.getProvince() + checkedAddress.getCity() + checkedAddress.getCounty() + " " + checkedAddress.getAddressDetail();
-            order.setAddress(detailedAddress);
-            order.setGoodsPrice(currentPrice);
-            order.setFreightPrice(freightPrice);
-            order.setCouponPrice(BigDecimal.ZERO);
-            order.setIntegralPrice(integralPrice);
-            order.setOrderPrice(orderTotalPrice);
-            order.setActualPrice(actualPrice);
-
-
-            order.setGrouponPrice(new BigDecimal(0));//  团购优惠价格,已废弃
-            // 添加订单表项
-            orderService.add(order);
-            orderId = order.getId();
-
-            LitemallGoods goods = goodsService.findById(product.getGoodsId());
-            // 订单商品
-            LitemallOrderGoods orderGoods = new LitemallOrderGoods();
-            orderGoods.setOrderId(order.getId());
-            orderGoods.setGoodsId(product.getGoodsId());
-            orderGoods.setGoodsSn(goods.getGoodsSn());
-            orderGoods.setProductId(product.getId());
-            orderGoods.setGoodsName(goods.getName());
-            orderGoods.setPicUrl(product.getUrl());
-            orderGoods.setPrice(originPrice);
-            orderGoods.setNumber(productCount.shortValue());
-            orderGoods.setSpecifications(product.getSpecifications());
-            orderGoods.setAddTime(LocalDateTime.now());
-
-            orderGoodsService.add(orderGoods);
-
-
-            // 删除购物车里面的商品信息
-            cartService.clearGoods(userId);
-
-            // 商品货品数量减少
-
-            int remainNumber = product.getNumber() - productCount;
-            if (remainNumber < 0) {
-                throw new RuntimeException("下单的商品货品数量大于库存量");
-            }
-            if (productService.reduceStock(productId, productCount.shortValue()) == 0) {
-                throw new RuntimeException("商品货品库存减少失败");
-            }
-
-
-
-            // 订单支付超期任务
-            taskService.addTask(new OrderUnpaidTask(orderId));
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("orderId", orderId);
-            return ResponseUtil.ok(data);
-
-        }
-        return null;
-    }
-    public BigDecimal getCurrentPrice(Integer productId,Integer ruleId){
+    public BigDecimal getCurrentPrice(Integer productId, Integer ruleId) {
         int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId);// 当前产品的闪购订单已卖出多少件
         LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
         ruleGoodsExample.createCriteria().andProductIdEqualTo(productId).andRuleIdEqualTo(ruleId);
@@ -573,7 +477,7 @@ public class WxOrderService {
 
         BigDecimal originPrice = product.getPrice();
         BigDecimal currentPrice = P2pUtil.getCurrentPrice(productSaleCount, originPrice.doubleValue(), price.doubleValue(), number);
-        return  currentPrice;
+        return currentPrice;
     }
 
     /**
@@ -958,6 +862,7 @@ public class WxOrderService {
         }
         /*** 更新推广返现表*/
         referrerService.updateOrderAlliance(order);
+        p2pService.updateRefund(orderId,userId);
         return ResponseUtil.ok();
     }
 

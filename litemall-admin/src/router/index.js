@@ -372,16 +372,6 @@ export const asyncRouterMap = [
           title: '闪购规则',
           noCache: true
         }
-      },
-      {
-        path: 'p2p-orders',
-        component: () => import('@/views/promotion/p2pOrders'),
-        name: 'grouponActivity',
-        meta: {
-          perms: ['GET /admin/p2p/orderList'],
-          title: '闪购订单',
-          noCache: true
-        }
       }
     ]
   },

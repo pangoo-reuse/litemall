@@ -102,7 +102,7 @@ CREATE TABLE `litemall_aftersale` (
   `order_id` int(11) NOT NULL COMMENT '订单ID',
   `user_id` int(11) NOT NULL COMMENT '用户ID',
   `type` smallint(6) DEFAULT '0' COMMENT '售后类型，0是未收货退款，1是已收货（无需退货）退款，2用户退货退款',
-  `reason` varchar(31) DEFAULT '' COMMENT '退款原因',
+  `reason` varchar(511) DEFAULT '' COMMENT '退款原因',
   `amount` decimal(10,2) DEFAULT '0.00' COMMENT '退款金额',
   `pictures` varchar(1023) DEFAULT '[]' COMMENT '退款凭证图片链接数组',
   `comment` varchar(511) DEFAULT '' COMMENT '退款说明',

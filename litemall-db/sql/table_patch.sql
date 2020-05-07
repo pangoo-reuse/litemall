@@ -27,7 +27,7 @@ ALTER TABLE `litemall_user`
     ADD `referral_code` varchar(64) COMMENT '用户分享码';
 
 ALTER TABLE `litemall_order`
-    ADD `is_p2p_order` tinyint(1) DEFAULT '0' COMMENT '是否闪购订单';
+    ADD `p2p_order` tinyint(1) DEFAULT '0' COMMENT '是否闪购订单';
 
 
 DROP TABLE IF EXISTS `litemall_referral_views`;
@@ -105,6 +105,7 @@ CREATE TABLE `litemall_p2p_rule_goods`
     `product_id`   int(11) NOT NULL COMMENT '商品产品表的ID',
     `price`        decimal(10, 2)   DEFAULT '0.00' COMMENT '最低价格',
     `rule`         int(11) NOT NULL DEFAULT '0' COMMENT '商品规则: 0 退差价 ,1 补数量',
+    `count`         int(3) NOT NULL DEFAULT '0' COMMENT '可售总数量',
     `created_time` datetime         DEFAULT NULL COMMENT '创建时间',
     `update_time`  datetime         DEFAULT NULL COMMENT '更新时间',
     `deleted`      tinyint(1)       DEFAULT '0' COMMENT '逻辑删除',
