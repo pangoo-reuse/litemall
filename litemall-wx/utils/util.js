@@ -1,4 +1,5 @@
 var api = require('../config/api.js');
+const aes = require('../lib/crypto-js/CryptoJS.js');
 var app = getApp();
 
 function formatTime(date) {
@@ -23,6 +24,15 @@ function formatNumber(n) {
  * 封封微信的的request
  */
 function request(url, data = {}, method = "GET") {
+  // Encrypt
+  // var ciphertext = aes.Encrypt(data).toString();
+
+  // // Decrypt
+  // var bytes  = aes.Decrypt(ciphertext);
+  // var originalText = bytes.toString();
+
+  // console.log(ciphertext);
+
   return new Promise(function (resolve, reject) {
     wx.request({
       url: url,
@@ -33,10 +43,15 @@ function request(url, data = {}, method = "GET") {
         'X-Litemall-Token': wx.getStorageSync('token')
       },
       success: function (res) {
-
+        var data = res.data;
+        if (res.header.encrypt) {
+          data = JSON.parse(aes.Decrypt(res.data))
+        }
+        if (api.DEBUG)
+          console.log(data);
         if (res.statusCode == 200) {
 
-          if (res.data.errno == 501) {
+          if (data.errno == 501) {
             // 清除登录相关内容
             try {
               wx.removeStorageSync('userInfo');
@@ -49,7 +64,8 @@ function request(url, data = {}, method = "GET") {
               url: '/pages/auth/login/login'
             });
           } else {
-            resolve(res.data);
+
+            resolve(data);
           }
         } else {
           reject(res.errMsg);

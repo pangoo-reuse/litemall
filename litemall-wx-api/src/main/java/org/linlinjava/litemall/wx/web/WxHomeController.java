@@ -5,10 +5,9 @@ import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.system.SystemConfig;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.domain.LitemallCategory;
-import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.domain.LitemallGoodsVo;
 import org.linlinjava.litemall.db.service.*;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.linlinjava.litemall.wx.service.HomeCacheManager;
 import org.linlinjava.litemall.wx.service.WxP2pRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +76,7 @@ public class WxHomeController {
      * @return 首页数据
      */
     @GetMapping("/index")
-    public Object index(@LoginUser Integer userId) {
+    public Object index(@IsLogin Integer userId) {
         //优先从缓存中读取
         if (HomeCacheManager.hasData(HomeCacheManager.INDEX)) {
             return ResponseUtil.ok(HomeCacheManager.getCacheData(HomeCacheManager.INDEX));

@@ -87,6 +87,7 @@
             type="datetime"
             placeholder="选择日期"
             value-format="yyyy-MM-dd HH:mm:ss"
+            :disabled="dialogStatus==='update'"
           />
         </el-form-item>
         <el-form-item label="是否启用" prop="status">

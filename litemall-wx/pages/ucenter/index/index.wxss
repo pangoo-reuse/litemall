@@ -129,11 +129,14 @@ page {
   height: 28rpx;
   width: 28rpx;
   position: absolute;
-  background: #b4282d;
+  background: #af330d;
   color: #fff;
   border-radius: 50%;
   margin-top: 20rpx;
   margin-left: 40rpx;
+  font-size: 20rpx;
+  padding-top: 4rpx;
+  text-align: center;
 }
 
 .user_column_item_image {

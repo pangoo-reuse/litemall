@@ -27,7 +27,7 @@ ALTER TABLE `litemall_user`
     ADD `referral_code` varchar(64) COMMENT '用户分享码';
 
 ALTER TABLE `litemall_order`
-    ADD `p2p_order` tinyint(1) DEFAULT '0' COMMENT '是否闪购订单';
+    ADD `p2p_rule_id` int(11) DEFAULT '0' COMMENT '闪购id';
 
 
 DROP TABLE IF EXISTS `litemall_referral_views`;

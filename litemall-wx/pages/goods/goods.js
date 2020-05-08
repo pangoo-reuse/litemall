@@ -34,7 +34,7 @@ Page({
     canWrite: false, //用户是否获取了保存相册的权限
     selfReferralCode: '',
     uid: 0,
-    viewTask: undefined
+    viewTask: undefined,
   },
 
   // 页面分享
@@ -159,7 +159,8 @@ Page({
           canShare: res.data.share,
           shippingInfo: res.data.shippingInfo,
           p2pPricesList: res.data.p2p.prices,
-          ruleId:res.data.p2p.ruleId,
+          ruleId: res.data.p2p.ruleId,
+
         });
 
 
@@ -176,6 +177,7 @@ Page({
         WxParse.wxParse('goodsDetail', 'html', res.data.info.detail, that);
         //获取推荐商品
         that.getGoodsRelated();
+
       }
     });
   },
@@ -194,7 +196,7 @@ Page({
     });
   },
 
- 
+
   // 规格选择
   clickSkuValue: function (event) {
     let that = this;
@@ -328,7 +330,7 @@ Page({
         this.setData({
           checkedSpecPrice: checkedProduct.price,
           soldout: false,
-          p2pPrice:p
+          p2pPrice: p
         });
       } else {
         this.setData({
@@ -490,7 +492,7 @@ Page({
         return false;
       }
 
-        //立即购买
+      //立即购买
       util.request(api.CartFastAdd, {
         goodsId: this.data.goods.id,
         number: this.data.number,
@@ -503,7 +505,7 @@ Page({
             try {
               wx.setStorageSync('cartId', res.data);
               wx.navigateTo({
-                url: '/pages/checkout/checkout?ruleId='+that.data.ruleId
+                url: '/pages/checkout/checkout?ruleId=' + that.data.ruleId
               })
             } catch (e) { }
 

@@ -7,7 +7,7 @@ import org.linlinjava.litemall.db.domain.LitemallKeyword;
 import org.linlinjava.litemall.db.domain.LitemallSearchHistory;
 import org.linlinjava.litemall.db.service.LitemallKeywordService;
 import org.linlinjava.litemall.db.service.LitemallSearchHistoryService;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +44,7 @@ public class WxSearchController {
      * @return 搜索页面信息
      */
     @GetMapping("index")
-    public Object index(@LoginUser Integer userId) {
+    public Object index(@IsLogin Integer userId) {
         //取出输入框默认的关键词
         LitemallKeyword defaultKeyword = keywordsService.queryDefault();
         //取出热闹关键词
@@ -93,7 +93,7 @@ public class WxSearchController {
      * @return 清理是否成功
      */
     @PostMapping("clearhistory")
-    public Object clearhistory(@LoginUser Integer userId) {
+    public Object clearhistory(@IsLogin Integer userId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }

@@ -82,7 +82,7 @@
 								<text class="name">{{item.goodsName}}</text>
 							</van-row>
 							<van-row>
-								<text class="desc">{{item.goodsDesc}}</text>
+								<text class="desc">{{item.brief}}</text>
 							</van-row>
 							<van-row>
 								<view class="retailPrice">闪购价 ￥{{item.price}}</view>

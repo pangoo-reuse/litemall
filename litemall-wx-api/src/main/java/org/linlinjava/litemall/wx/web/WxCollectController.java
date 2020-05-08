@@ -11,7 +11,7 @@ import org.linlinjava.litemall.db.domain.LitemallCollect;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.service.LitemallCollectService;
 import org.linlinjava.litemall.db.service.LitemallGoodsService;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +46,7 @@ public class WxCollectController {
      * @return 用户收藏列表
      */
     @GetMapping("list")
-    public Object list(@LoginUser Integer userId,
+    public Object list(@IsLogin Integer userId,
                        @NotNull Byte type,
                        @RequestParam(defaultValue = "1") Integer page,
                        @RequestParam(defaultValue = "10") Integer limit,
@@ -87,7 +87,7 @@ public class WxCollectController {
      * @return 操作结果
      */
     @PostMapping("addordelete")
-    public Object addordelete(@LoginUser Integer userId, @RequestBody String body) {
+    public Object addordelete(@IsLogin Integer userId, @RequestBody String body) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }

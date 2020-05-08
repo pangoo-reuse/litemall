@@ -37,7 +37,7 @@
     <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="deleted" jdbcType="BIT" property="deleted" />
-    <result column="p2p_order" jdbcType="BIT" property="p2pOrder" />
+    <result column="p2p_rule_id" jdbcType="INTEGER" property="p2pRuleId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -114,7 +114,7 @@
     message, goods_price, freight_price, coupon_price, integral_price, groupon_price, 
     order_price, actual_price, pay_id, pay_time, ship_sn, ship_channel, ship_time, refund_amount, 
     refund_type, refund_content, refund_time, confirm_time, comments, end_time, add_time, 
-    update_time, deleted, p2p_order
+    update_time, deleted, p2p_rule_id
   </sql>
   <select id="selectByExample" parameterType="org.linlinjava.litemall.db.domain.LitemallOrderExample" resultMap="BaseResultMap">
     <!--
@@ -245,7 +245,7 @@
       refund_type, refund_content, refund_time, 
       confirm_time, comments, end_time, 
       add_time, update_time, deleted, 
-      p2p_order)
+      p2p_rule_id)
     values (#{userId,jdbcType=INTEGER}, #{orderSn,jdbcType=VARCHAR}, #{orderStatus,jdbcType=SMALLINT}, 
       #{aftersaleStatus,jdbcType=SMALLINT}, #{consignee,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
       #{address,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, #{goodsPrice,jdbcType=DECIMAL}, 
@@ -256,7 +256,7 @@
       #{refundType,jdbcType=VARCHAR}, #{refundContent,jdbcType=VARCHAR}, #{refundTime,jdbcType=TIMESTAMP}, 
       #{confirmTime,jdbcType=TIMESTAMP}, #{comments,jdbcType=SMALLINT}, #{endTime,jdbcType=TIMESTAMP}, 
       #{addTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=BIT}, 
-      #{p2pOrder,jdbcType=BIT})
+      #{p2pRuleId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="org.linlinjava.litemall.db.domain.LitemallOrder">
     <!--
@@ -358,8 +358,8 @@
       <if test="deleted != null">
         deleted,
       </if>
-      <if test="p2pOrder != null">
-        p2p_order,
+      <if test="p2pRuleId != null">
+        p2p_rule_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -453,8 +453,8 @@
       <if test="deleted != null">
         #{deleted,jdbcType=BIT},
       </if>
-      <if test="p2pOrder != null">
-        #{p2pOrder,jdbcType=BIT},
+      <if test="p2pRuleId != null">
+        #{p2pRuleId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -568,8 +568,8 @@
       <if test="record.deleted != null">
         deleted = #{record.deleted,jdbcType=BIT},
       </if>
-      <if test="record.p2pOrder != null">
-        p2p_order = #{record.p2pOrder,jdbcType=BIT},
+      <if test="record.p2pRuleId != null">
+        p2p_rule_id = #{record.p2pRuleId,jdbcType=INTEGER},
       </if>
     </set>
     <if test="_parameter != null">
@@ -613,7 +613,7 @@
       add_time = #{record.addTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       deleted = #{record.deleted,jdbcType=BIT},
-      p2p_order = #{record.p2pOrder,jdbcType=BIT}
+      p2p_rule_id = #{record.p2pRuleId,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -715,8 +715,8 @@
       <if test="deleted != null">
         deleted = #{deleted,jdbcType=BIT},
       </if>
-      <if test="p2pOrder != null">
-        p2p_order = #{p2pOrder,jdbcType=BIT},
+      <if test="p2pRuleId != null">
+        p2p_rule_id = #{p2pRuleId,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -757,7 +757,7 @@
       add_time = #{addTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=BIT},
-      p2p_order = #{p2pOrder,jdbcType=BIT}
+      p2p_rule_id = #{p2pRuleId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectOneByExample" parameterType="org.linlinjava.litemall.db.domain.LitemallOrderExample" resultMap="BaseResultMap">

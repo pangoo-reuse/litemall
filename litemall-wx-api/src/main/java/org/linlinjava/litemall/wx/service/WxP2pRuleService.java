@@ -43,14 +43,14 @@ public class WxP2pRuleService {
 
 
     public List<P2pRuleVa> queryList(Integer page, Integer size, String sort, String order) {
-        Page<LitemallP2pRule> grouponRulesList = (Page<LitemallP2pRule>) p2pRuleService.queryList(page, size, sort, order);
+        Page<LitemallP2pRule> p2pRulesList = (Page<LitemallP2pRule>) p2pRuleService.queryList(page, size, sort, order);
 //
-        Page<P2pRuleVa> grouponList = new Page<P2pRuleVa>();
-        grouponList.setPages(grouponRulesList.getPages());
-        grouponList.setPageNum(grouponRulesList.getPageNum());
-        grouponList.setPageSize(grouponRulesList.getPageSize());
-        grouponList.setTotal(grouponRulesList.getTotal());
-        for (LitemallP2pRule rule : grouponRulesList) {
+        Page<P2pRuleVa> p2pList = new Page<P2pRuleVa>();
+        p2pList.setPages(p2pRulesList.getPages());
+        p2pList.setPageNum(p2pRulesList.getPageNum());
+        p2pList.setPageSize(p2pRulesList.getPageSize());
+        p2pList.setTotal(p2pRulesList.getTotal());
+        for (LitemallP2pRule rule : p2pRulesList) {
             LitemallGoods goods = litemallGoodsService.findById(rule.getGoodsId());
             if (goods != null) {
                 LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
@@ -59,7 +59,7 @@ public class WxP2pRuleService {
                 int saleCount = 10;
                 for (LitemallP2pRuleGoods ruleGoods : ruleGoodsList) {
                     Integer productId = ruleGoods.getProductId();
-                    int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId);// 当前产品的闪购订单已卖出多少件
+                    int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId,rule.getId());// 当前产品的闪购订单已卖出多少件
                     saleCount += productSaleCount;
                 }
 
@@ -81,12 +81,12 @@ public class WxP2pRuleService {
 //                int orderCount = customSqlMapper.orderCountByRuleOrderId(rule.getId());
 //                //int orderCount, double originPrice, double minPrice, int maxPiece
 //                grouponRulesService.getCurrentPrice(orderCount,va.getPrice(),);
-                grouponList.add(va);
+                p2pList.add(va);
             }
 
         }
 
 
-        return grouponList;
+        return p2pList;
     }
 }

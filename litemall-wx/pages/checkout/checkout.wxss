@@ -144,20 +144,21 @@ page {
 
 .message-box {
   margin-top: 20rpx;
-  width: 100%;
+  width: auto;
   height: auto;
   overflow: hidden;
-  background: #fff;
+ 
 }
 
 .message-box .message-item {
   height: 52.078rpx;
   overflow: hidden;
-  background: #fff;
-  display: flex;
-  margin-left: 31.25rpx;
+  background: #ffffff;
+  display: block;
+  padding-left: 31.25rpx;
   padding-right: 31.25rpx;
   padding-top: 26rpx;
+  padding-bottom: 26rpx;
 }
 
 .order-box {

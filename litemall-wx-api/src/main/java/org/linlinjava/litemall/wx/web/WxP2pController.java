@@ -10,7 +10,7 @@ import org.linlinjava.litemall.core.validator.Sort;
 import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.db.util.OrderUtil;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.linlinjava.litemall.wx.service.WxP2pRuleService;
 import org.linlinjava.litemall.wx.vo.P2pRuleVa;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +82,7 @@ public class WxP2pController {
      * @return 团购活动详情
      */
     @GetMapping("detail")
-    public Object detail(@LoginUser Integer userId, @NotNull Integer grouponId) {
+    public Object detail(@IsLogin Integer userId, @NotNull Integer grouponId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -211,7 +211,7 @@ public class WxP2pController {
      * @return 用户开团或入团情况
      */
     @GetMapping("my")
-    public Object my(@LoginUser Integer userId, @RequestParam(defaultValue = "0") Integer showType) {
+    public Object my(@IsLogin Integer userId, @RequestParam(defaultValue = "0") Integer showType) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }

@@ -1,4 +1,7 @@
 litemall:
+  secret:
+    aes-key: '1111111111111111'
+    aes-iv:  '1111111111111111'
   # 开发者应该设置成自己的wx相关信息
   wx:
     app-id: wxf1954bee9d7cf126

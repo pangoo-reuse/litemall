@@ -3,6 +3,7 @@ package org.linlinjava.litemall.db.dao;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.linlinjava.litemall.db.util.OrderUtil;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,8 +34,8 @@ public interface CustomSqlMapper {
 //      <include refid="Example_Where_Clause" />
 //    </if>
 //  </select>
-    @Select("select count(*) from litemall_order_goods ogd left join litemall_order o on ( ogd.order_id = o.id) where ogd.product_id = #{productId,jdbcType=INTEGER}  and o.p2p_order = 1 ")
-    int orderP2pCountByProductId(Integer productId);
+    @Select("select count(*) from litemall_order_goods ogd left join litemall_order o on ( ogd.order_id = o.id) where ogd.product_id = #{productId,jdbcType=INTEGER}  and o.p2p_rule_id = #{ruleId,jdbcType=INTEGER}  ")
+    int orderP2pCountByProductId(Integer productId,Integer ruleId);
 
     @Select("select count(*) from litemall_p2p_rule where goods_id = #{goodsId,jdbcType=INTEGER} and status = 1 and expire_time > NOW()")
     int existP2pRuleCount(Integer goodsId);

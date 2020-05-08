@@ -1,3 +1,4 @@
+var debug = true
 // 以下是业务服务器API地址
 // 本机开发时使用
 // var WxApiRoot = 'http://localhost:8080/wx/';
@@ -10,6 +11,7 @@ var WxApiRoot = 'http://192.168.23.11:8080/wx/';
 var MapUrl = 'https://apis.map.qq.com/ws/geocoder/v1/?location={latitude},{longitude}&key=DFVBZ-M5GKJ-5ZIFN-F36EH-TBBS5-WQFTU';
 
 module.exports = {
+  DEBUG: debug,
   IndexUrl: WxApiRoot + 'home/index', //首页数据接口
   AboutUrl: WxApiRoot + 'home/about', //介绍信息
 

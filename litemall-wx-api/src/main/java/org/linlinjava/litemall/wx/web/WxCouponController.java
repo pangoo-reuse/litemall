@@ -12,7 +12,7 @@ import org.linlinjava.litemall.db.domain.LitemallCouponUser;
 import org.linlinjava.litemall.db.domain.LitemallGrouponRules;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.db.util.CouponConstant;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.linlinjava.litemall.wx.vo.CouponVo;
 import org.linlinjava.litemall.wx.util.WxResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +75,7 @@ public class WxCouponController {
      * @return
      */
     @GetMapping("mylist")
-    public Object mylist(@LoginUser Integer userId,
+    public Object mylist(@IsLogin Integer userId,
                        Short status,
                        @RequestParam(defaultValue = "1") Integer page,
                        @RequestParam(defaultValue = "10") Integer limit,
@@ -122,7 +122,7 @@ public class WxCouponController {
      * @return
      */
     @GetMapping("selectlist")
-    public Object selectlist(@LoginUser Integer userId, Integer cartId, Integer grouponRulesId) {
+    public Object selectlist(@IsLogin Integer userId, Integer cartId, Integer grouponRulesId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -175,7 +175,7 @@ public class WxCouponController {
      * @return 操作结果
      */
     @PostMapping("receive")
-    public Object receive(@LoginUser Integer userId, @RequestBody String body) {
+    public Object receive(@IsLogin Integer userId, @RequestBody String body) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -253,7 +253,7 @@ public class WxCouponController {
      * @return 操作结果
      */
     @PostMapping("exchange")
-    public Object exchange(@LoginUser Integer userId, @RequestBody String body) {
+    public Object exchange(@IsLogin Integer userId, @RequestBody String body) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }

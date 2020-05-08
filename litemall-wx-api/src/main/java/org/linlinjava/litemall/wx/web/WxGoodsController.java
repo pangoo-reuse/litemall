@@ -10,7 +10,7 @@ import org.linlinjava.litemall.core.validator.Order;
 import org.linlinjava.litemall.core.validator.Sort;
 import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.linlinjava.litemall.wx.service.WxOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -100,7 +100,7 @@ public class WxGoodsController {
      * that.globalData.district = district;
      */
     @GetMapping("detail")
-    public Object detail(@LoginUser Integer userId, @NotNull Integer id, @NotNull String regionCode/*zipCode*/, @NotNull String cityZipCode) {
+    public Object detail(@IsLogin Integer userId, @NotNull Integer id, @NotNull String regionCode/*zipCode*/, @NotNull String cityZipCode) {
         // 商品信息
         LitemallGoodsVo goods = goodsService.findById(id);
 
@@ -304,7 +304,7 @@ public class WxGoodsController {
             String keyword,
             Boolean isNew,
             Boolean isHot,
-            @LoginUser Integer userId,
+            @IsLogin Integer userId,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer limit,
             @Sort(accepts = {"add_time", "retail_price", "name"}) @RequestParam(defaultValue = "add_time") String sort,

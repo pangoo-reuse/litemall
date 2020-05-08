@@ -15,13 +15,12 @@ import org.linlinjava.litemall.core.util.bcrypt.BCryptPasswordEncoder;
 import org.linlinjava.litemall.db.domain.LitemallUser;
 import org.linlinjava.litemall.db.service.CouponAssignService;
 import org.linlinjava.litemall.db.service.LitemallUserService;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.linlinjava.litemall.wx.dto.UserInfo;
 import org.linlinjava.litemall.wx.dto.WxLoginInfo;
 import org.linlinjava.litemall.wx.service.CaptchaCodeManager;
 import org.linlinjava.litemall.wx.service.UserTokenManager;
 import org.linlinjava.litemall.core.util.IpUtil;
-import org.linlinjava.litemall.wx.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -342,7 +341,7 @@ public class WxAuthController {
      * @return
      */
     @PostMapping("captcha")
-    public Object captcha(@LoginUser Integer userId, @RequestBody String body) {
+    public Object captcha(@IsLogin Integer userId, @RequestBody String body) {
         if(userId == null){
             return ResponseUtil.unlogin();
         }
@@ -438,7 +437,7 @@ public class WxAuthController {
      * 失败则 { errno: XXX, errmsg: XXX }
      */
     @PostMapping("resetPhone")
-    public Object resetPhone(@LoginUser Integer userId, @RequestBody String body, HttpServletRequest request) {
+    public Object resetPhone(@IsLogin Integer userId, @RequestBody String body, HttpServletRequest request) {
         if(userId == null){
             return ResponseUtil.unlogin();
         }
@@ -491,7 +490,7 @@ public class WxAuthController {
      * 失败则 { errno: XXX, errmsg: XXX }
      */
     @PostMapping("profile")
-    public Object profile(@LoginUser Integer userId, @RequestBody String body, HttpServletRequest request) {
+    public Object profile(@IsLogin Integer userId, @RequestBody String body, HttpServletRequest request) {
         if(userId == null){
             return ResponseUtil.unlogin();
         }
@@ -525,7 +524,7 @@ public class WxAuthController {
      * @return
      */
     @PostMapping("bindPhone")
-    public Object bindPhone(@LoginUser Integer userId, @RequestBody String body) {
+    public Object bindPhone(@IsLogin Integer userId, @RequestBody String body) {
     	if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -542,7 +541,7 @@ public class WxAuthController {
     }
 
     @PostMapping("logout")
-    public Object logout(@LoginUser Integer userId) {
+    public Object logout(@IsLogin Integer userId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -550,7 +549,7 @@ public class WxAuthController {
     }
 
     @GetMapping("info")
-    public Object info(@LoginUser Integer userId) {
+    public Object info(@IsLogin Integer userId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }

@@ -378,17 +378,11 @@ public class LitemallP2pService {
         return map;
     }
 
-    public List<LitemallOrder> findAllCompleted() {
-        LitemallOrderExample orderExample = new LitemallOrderExample();
-        orderExample.createCriteria().andP2pOrderEqualTo(true).andOrderStatusEqualTo(OrderUtil.STATUS_PAY);
-        List<LitemallOrder> orders = litemallOrderMapper.selectByExample(orderExample);
-        return orders;
-    }
 
     public void updateRefund(Integer orderId, Integer userId) {
 
         LitemallOrder order = orderService.findById(userId, orderId);
-        if (order != null && order.getUserId().equals(userId)) {
+        if (order != null && order.getUserId().equals(userId)&&order.getP2pRuleId().compareTo(0) != 0 &&order.getOrderStatus().equals(OrderUtil.STATUS_CONFIRM)) {
             // 进一步验证
             if (OrderUtil.isConfirmStatus(order) || OrderUtil.isAutoConfirmStatus(order)) {
 
@@ -441,7 +435,7 @@ public class LitemallP2pService {
                 Integer ruleId = ruleGoods.getRuleId();
                 LitemallP2pRule p2pRule = p2pRuleMapper.selectByPrimaryKey(ruleId);
                 if (p2pRule != null) {
-                    int orderCount = customSqlMapper.orderP2pCountByProductId(productId);
+                    int orderCount = customSqlMapper.orderP2pCountByProductId(productId,ruleId);
                     BigDecimal currentPrice = P2pUtil.getCurrentPrice(orderCount, goods.getPrice().doubleValue(), ruleGoods.getPrice().doubleValue(), ruleGoods.getCount());
                     aftersale.setReason("【"+goods.getGoodsName()+"】原价:"+ order.getGoodsPrice()+",最低售价："+ruleGoods.getPrice()+",均价："+ currentPrice+",订单数："+ orderCount+",总数："+ ruleGoods.getCount());
                     return order.getGoodsPrice().subtract(currentPrice);

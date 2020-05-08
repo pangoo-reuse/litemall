@@ -1,6 +1,5 @@
 package org.linlinjava.litemall.wx.web;
 
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.util.JacksonUtil;
@@ -9,12 +8,11 @@ import org.linlinjava.litemall.db.domain.LitemallFootprint;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.service.LitemallFootprintService;
 import org.linlinjava.litemall.db.service.LitemallGoodsService;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +40,7 @@ public class WxFootprintController {
      * @return 删除操作结果
      */
     @PostMapping("delete")
-    public Object delete(@LoginUser Integer userId, @RequestBody String body) {
+    public Object delete(@IsLogin Integer userId, @RequestBody String body) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -75,7 +73,7 @@ public class WxFootprintController {
      * @return 用户足迹列表
      */
     @GetMapping("list")
-    public Object list(@LoginUser Integer userId,
+    public Object list(@IsLogin Integer userId,
                        @RequestParam(defaultValue = "1") Integer page,
                        @RequestParam(defaultValue = "10") Integer limit) {
         if (userId == null) {

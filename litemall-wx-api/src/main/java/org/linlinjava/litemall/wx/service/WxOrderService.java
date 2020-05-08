@@ -357,7 +357,7 @@ public class WxOrderService {
 
 
             // 计算当前商品的价格
-            int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId);// 当前产品的闪购订单已卖出多少件
+            int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId,ruleId);// 当前产品的闪购订单已卖出多少件
             LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
             ruleGoodsExample.createCriteria().andProductIdEqualTo(productId).andRuleIdEqualTo(ruleId);
             LitemallP2pRuleGoods ruleGoods = litemallP2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);
@@ -418,7 +418,7 @@ public class WxOrderService {
             orderGoods.setAddTime(LocalDateTime.now());
             if (ruleId != null && ruleId > 0) {
                 // 是否闪购订单
-                order.setP2pOrder(true);
+                order.setP2pRuleId(ruleId);
                 orderService.updateWithOptimisticLocker(order);
             }
             orderGoodsService.add(orderGoods);
@@ -464,7 +464,7 @@ public class WxOrderService {
 
 
     public BigDecimal getCurrentPrice(Integer productId, Integer ruleId) {
-        int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId);// 当前产品的闪购订单已卖出多少件
+        int productSaleCount = customSqlMapper.orderP2pCountByProductId(productId,ruleId);// 当前产品的闪购订单已卖出多少件
         LitemallP2pRuleGoodsExample ruleGoodsExample = new LitemallP2pRuleGoodsExample();
         ruleGoodsExample.createCriteria().andProductIdEqualTo(productId).andRuleIdEqualTo(ruleId);
         LitemallP2pRuleGoods ruleGoods = litemallP2pRuleGoodsMapper.selectOneByExampleSelective(ruleGoodsExample);

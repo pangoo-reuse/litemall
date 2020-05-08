@@ -10,7 +10,7 @@ import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.db.util.AftersaleConstant;
 import org.linlinjava.litemall.db.util.OrderUtil;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.linlinjava.litemall.wx.util.WxResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -55,7 +55,7 @@ public class WxAftersaleController {
      * @return 售后列表
      */
     @GetMapping("list")
-    public Object list(@LoginUser Integer userId,
+    public Object list(@IsLogin Integer userId,
                        @RequestParam Short status,
                        @RequestParam(defaultValue = "1") Integer page,
                        @RequestParam(defaultValue = "10") Integer limit,
@@ -88,7 +88,7 @@ public class WxAftersaleController {
      * @return 售后详情
      */
     @GetMapping("detail")
-    public Object detail(@LoginUser Integer userId, @NotNull Integer orderId) {
+    public Object detail(@IsLogin Integer userId, @NotNull Integer orderId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -115,7 +115,7 @@ public class WxAftersaleController {
      * @return 操作结果
      */
     @PostMapping("submit")
-    public Object submit(@LoginUser Integer userId, @RequestBody LitemallAftersale aftersale) {
+    public Object submit(@IsLogin Integer userId, @RequestBody LitemallAftersale aftersale) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -169,7 +169,7 @@ public class WxAftersaleController {
      * @return 操作结果
      */
     @PostMapping("cancel")
-    public Object cancel(@LoginUser Integer userId, @RequestBody LitemallAftersale aftersale) {
+    public Object cancel(@IsLogin Integer userId, @RequestBody LitemallAftersale aftersale) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }

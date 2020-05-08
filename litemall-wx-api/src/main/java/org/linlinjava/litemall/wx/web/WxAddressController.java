@@ -6,8 +6,7 @@ import org.linlinjava.litemall.core.util.RegexUtil;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.domain.LitemallAddress;
 import org.linlinjava.litemall.db.service.LitemallAddressService;
-import org.linlinjava.litemall.db.service.LitemallRegionService;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.linlinjava.litemall.wx.service.GetRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -38,7 +37,7 @@ public class WxAddressController extends GetRegionService {
 	 * @return 收货地址列表
 	 */
 	@GetMapping("list")
-	public Object list(@LoginUser Integer userId) {
+	public Object list(@IsLogin Integer userId) {
 		if (userId == null) {
 			return ResponseUtil.unlogin();
 		}
@@ -54,7 +53,7 @@ public class WxAddressController extends GetRegionService {
 	 * @return 收货地址详情
 	 */
 	@GetMapping("detail")
-	public Object detail(@LoginUser Integer userId, @NotNull Integer id) {
+	public Object detail(@IsLogin Integer userId, @NotNull Integer id) {
 		if (userId == null) {
 			return ResponseUtil.unlogin();
 		}
@@ -122,7 +121,7 @@ public class WxAddressController extends GetRegionService {
 	 * @return 添加或更新操作结果
 	 */
 	@PostMapping("save")
-	public Object save(@LoginUser Integer userId, @RequestBody LitemallAddress address) {
+	public Object save(@IsLogin Integer userId, @RequestBody LitemallAddress address) {
 		if (userId == null) {
 			return ResponseUtil.unlogin();
 		}
@@ -165,7 +164,7 @@ public class WxAddressController extends GetRegionService {
 	 * @return 删除操作结果
 	 */
 	@PostMapping("delete")
-	public Object delete(@LoginUser Integer userId, @RequestBody LitemallAddress address) {
+	public Object delete(@IsLogin Integer userId, @RequestBody LitemallAddress address) {
 		if (userId == null) {
 			return ResponseUtil.unlogin();
 		}

@@ -1,13 +1,13 @@
 <view class="container">
 
-  <view class="label">项目名称:</view>
+  <view class="label">商城名称:</view>
   <view class="about-item">
     <view class="item-left">
       <text>{{name}}</text> 
     </view>
   </view>
 
-  <view class="label">项目地址:</view>
+  <view class="label">营业地址:</view>
   <view class="about-item">
     <view class="item-left">
       <text>{{address}}</text> 

@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.service.LitemallOrderService;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +35,7 @@ public class WxUserController {
      * @return 用户个人页面数据
      */
     @GetMapping("index")
-    public Object list(@LoginUser Integer userId) {
+    public Object list(@IsLogin Integer userId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }

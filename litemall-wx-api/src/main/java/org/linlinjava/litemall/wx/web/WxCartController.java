@@ -9,7 +9,7 @@ import org.linlinjava.litemall.core.util.JacksonUtil;
 import org.linlinjava.litemall.core.util.ResponseUtil;
 import org.linlinjava.litemall.db.domain.*;
 import org.linlinjava.litemall.db.service.*;
-import org.linlinjava.litemall.wx.annotation.LoginUser;
+import org.linlinjava.litemall.wx.annotation.IsLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -59,7 +59,7 @@ public class WxCartController {
      * @return 用户购物车信息
      */
     @GetMapping("index")
-    public Object index(@LoginUser Integer userId) {
+    public Object index(@IsLogin Integer userId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -115,7 +115,7 @@ public class WxCartController {
      * @return 加入购物车操作结果
      */
     @PostMapping("add")
-    public Object add(@LoginUser Integer userId, @RequestBody LitemallCart cart) {
+    public Object add(@IsLogin Integer userId, @RequestBody LitemallCart cart) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -188,7 +188,7 @@ public class WxCartController {
      * @return 立即购买操作结果
      */
     @PostMapping("fastadd")
-    public Object fastadd(@LoginUser Integer userId, @RequestBody LitemallCart cart) {
+    public Object fastadd(@IsLogin Integer userId, @RequestBody LitemallCart cart) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -257,7 +257,7 @@ public class WxCartController {
      * @return 修改结果
      */
     @PostMapping("update")
-    public Object update(@LoginUser Integer userId, @RequestBody LitemallCart cart) {
+    public Object update(@IsLogin Integer userId, @RequestBody LitemallCart cart) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -316,7 +316,7 @@ public class WxCartController {
      * @return 购物车信息
      */
     @PostMapping("checked")
-    public Object checked(@LoginUser Integer userId, @RequestBody String body) {
+    public Object checked(@IsLogin Integer userId, @RequestBody String body) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -354,7 +354,7 @@ public class WxCartController {
      * 失败则 { errno: XXX, errmsg: XXX }
      */
     @PostMapping("delete")
-    public Object delete(@LoginUser Integer userId, @RequestBody String body) {
+    public Object delete(@IsLogin Integer userId, @RequestBody String body) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
@@ -381,7 +381,7 @@ public class WxCartController {
      * @return 购物车商品货品数量
      */
     @GetMapping("goodscount")
-    public Object goodscount(@LoginUser Integer userId) {
+    public Object goodscount(@IsLogin Integer userId) {
         if (userId == null) {
             return ResponseUtil.ok(0);
         }
@@ -409,7 +409,7 @@ public class WxCartController {
      * @return 购物车操作结果
      */
     @GetMapping("checkout")
-    public Object checkout(@LoginUser Integer userId, Integer cartId, Integer addressId, Integer couponId, Integer userCouponId, Integer ruleId) {
+    public Object checkout(@IsLogin Integer userId, Integer cartId, Integer addressId, Integer couponId, Integer userCouponId, Integer ruleId) {
         if (userId == null) {
             return ResponseUtil.unlogin();
         }
