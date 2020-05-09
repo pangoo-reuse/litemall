@@ -97,8 +97,8 @@
             <if test="order.deleted != null">
                 deleted = #{order.deleted,jdbcType=BIT},
             </if>
-            <if test="order.p2pOrder != null">
-                p2p_order = #{order.p2pOrder,jdbcType=BIT},
+            <if test="order.p2pRuleId != null">
+                p2p_rule_id = #{order.p2pRuleId,jdbcType=INTEGER},
             </if>
         </set>
         where id = #{order.id,jdbcType=INTEGER} and update_time = #{lastUpdateTime,jdbcType=INTEGER}

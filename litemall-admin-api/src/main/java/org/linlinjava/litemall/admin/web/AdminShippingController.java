@@ -44,7 +44,7 @@ public class AdminShippingController {
      * @return
      */
     @RequiresPermissions("admin:shipping:list")
-    @RequiresPermissionsDesc(menu = {"系统管理", "运费管理"}, button = "所有模板")
+    @RequiresPermissionsDesc(menu = {"配置管理", "运费管理"}, button = "所有模板")
     @GetMapping("/list")
     public Object list(
             @RequestParam(defaultValue = "1") Integer page,
@@ -61,7 +61,7 @@ public class AdminShippingController {
      * @return
      */
     @RequiresPermissions("admin:shipping:search")
-    @RequiresPermissionsDesc(menu = {"系统管理", "运费管理"}, button = "查询")
+    @RequiresPermissionsDesc(menu = {"配置管理", "运费管理"}, button = "查询")
     @GetMapping("/search")
     public Object search(
             @RequestParam(defaultValue = "") String regionName) {
@@ -74,7 +74,7 @@ public class AdminShippingController {
      * @return
      */
     @RequiresPermissions("admin:shipping:create")
-    @RequiresPermissionsDesc(menu = {"系统管理", "运费管理"}, button = "运费创建")
+    @RequiresPermissionsDesc(menu = {"配置管理", "运费管理"}, button = "创建")
     @PostMapping("/create")
     public Object create(@RequestBody LitemallShippingConfig shippingConfig) {
         Object error = validate(shippingConfig);
@@ -92,7 +92,7 @@ public class AdminShippingController {
      * @return
      */
     @RequiresPermissions("admin:shipping:update")
-    @RequiresPermissionsDesc(menu = {"系统管理", "运费管理"}, button = "更新")
+    @RequiresPermissionsDesc(menu = {"配置管理", "运费管理"}, button = "更新")
     @PostMapping("/update")
     public Object update(@RequestBody LitemallShippingConfig shippingConfig) {
         Object error = validate(shippingConfig);
@@ -112,7 +112,7 @@ public class AdminShippingController {
      * @param id 模板id
      */
     @RequiresPermissions("admin:shipping:delete")
-    @RequiresPermissionsDesc(menu = {"系统管理", "运费管理"}, button = "删除模板")
+    @RequiresPermissionsDesc(menu = {"配置管理", "运费管理"}, button = "删除")
     @GetMapping("/delete")
     public Object delete(@RequestParam(defaultValue = "") Integer id) {
         if (StringUtils.isEmpty(id)) return  ResponseUtil.badArgument();

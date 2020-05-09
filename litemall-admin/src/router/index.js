@@ -466,8 +466,17 @@ export const asyncRouterMap = [
         component: () => import('@/views/config/express'),
         name: 'configExpress',
         meta: {
-          perms: ['GET /admin/config/express', 'POST /admin/config/express'],
+          perms: ['GET /admin/shipping/delete', 'POST /admin/shipping/create'],
           title: '运费配置',
+          noCache: true
+        }
+      },   {
+        path: 'delivery',
+        component: () => import('@/views/config/delivery'),
+        name: 'deliverers',
+        meta: {
+          perms: ['GET /admin/delivery/delete', 'POST /admin/delivery/create'],
+          title: '送货员配置',
           noCache: true
         }
       },

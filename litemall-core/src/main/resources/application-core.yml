@@ -81,6 +81,8 @@ litemall:
       name: "FEDEX联邦(国内件)"
     - code: "FEDEX_GJ"
       name: "FEDEX联邦(国际件)"
+    - code: "TCS"
+      name: "同城送"
 
   # 对象存储配置
   storage:

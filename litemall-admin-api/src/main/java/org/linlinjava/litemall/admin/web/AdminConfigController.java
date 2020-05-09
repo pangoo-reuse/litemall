@@ -41,23 +41,23 @@ public class AdminConfigController {
         return ResponseUtil.ok();
     }
 
-    @RequiresPermissions("admin:config:express:list")
-    @RequiresPermissionsDesc(menu = {"配置管理", "运费配置"}, button = "详情")
-    @GetMapping("/express")
-    public Object listExpress() {
-        Map<String, String> data = systemConfigService.listExpress();
-        return ResponseUtil.ok(data);
-    }
-
-    @RequiresPermissions("admin:config:express:updateConfigs")
-    @RequiresPermissionsDesc(menu = {"配置管理", "运费配置"}, button = "编辑")
-    @PostMapping("/express")
-    public Object updateExpress(@RequestBody String body) {
-        Map<String, String> data = JacksonUtil.toMap(body);
-        systemConfigService.updateConfig(data);
-        SystemConfig.updateConfigs(data);
-        return ResponseUtil.ok();
-    }
+//    @RequiresPermissions("admin:config:express:list")
+//    @RequiresPermissionsDesc(menu = {"配置管理", "运费配置"}, button = "详情")
+//    @GetMapping("/express")
+//    public Object listExpress() {
+//        Map<String, String> data = systemConfigService.listExpress();
+//        return ResponseUtil.ok(data);
+//    }
+//
+//    @RequiresPermissions("admin:config:express:updateConfigs")
+//    @RequiresPermissionsDesc(menu = {"配置管理", "运费配置"}, button = "编辑")
+//    @PostMapping("/express")
+//    public Object updateExpress(@RequestBody String body) {
+//        Map<String, String> data = JacksonUtil.toMap(body);
+//        systemConfigService.updateConfig(data);
+//        SystemConfig.updateConfigs(data);
+//        return ResponseUtil.ok();
+//    }
 
     @RequiresPermissions("admin:config:order:list")
     @RequiresPermissionsDesc(menu = {"配置管理", "订单配置"}, button = "详情")

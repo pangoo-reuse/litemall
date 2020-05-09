@@ -105,7 +105,7 @@ CREATE TABLE `litemall_p2p_rule_goods`
     `product_id`   int(11) NOT NULL COMMENT '商品产品表的ID',
     `price`        decimal(10, 2)   DEFAULT '0.00' COMMENT '最低价格',
     `rule`         int(11) NOT NULL DEFAULT '0' COMMENT '商品规则: 0 退差价 ,1 补数量',
-    `count`         int(3) NOT NULL DEFAULT '0' COMMENT '可售总数量',
+    `count`        int(3)  NOT NULL DEFAULT '0' COMMENT '可售总数量',
     `created_time` datetime         DEFAULT NULL COMMENT '创建时间',
     `update_time`  datetime         DEFAULT NULL COMMENT '更新时间',
     `deleted`      tinyint(1)       DEFAULT '0' COMMENT '逻辑删除',
@@ -113,6 +113,25 @@ CREATE TABLE `litemall_p2p_rule_goods`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 2
   DEFAULT CHARSET = utf8mb4 COMMENT ='规则商品表';
+
+
+DROP TABLE IF EXISTS `litemall_delivery`;
+
+CREATE TABLE `litemall_delivery`
+(
+    `id`            int(11)     NOT NULL AUTO_INCREMENT,
+    `delivery_name` varchar(8)  NOT NULL COMMENT '姓名',
+    `mobile`        varchar(11) NOT NULL COMMENT '手机号',
+    `idcard`         varchar(18)       COMMENT '身份证号',
+    `delivery_region`          varchar(256)     NOT NULL COMMENT '配送范围',
+    `enabled`       tinyint(1)           DEFAULT '0' COMMENT '是否可用',
+    `created_time`  datetime             DEFAULT NULL COMMENT '创建时间',
+    `update_time`   datetime             DEFAULT NULL COMMENT '更新时间',
+    `deleted`       tinyint(1)           DEFAULT '0' COMMENT '逻辑删除',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 2
+  DEFAULT CHARSET = utf8mb4 COMMENT ='配送员表';
 
 
 

@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,6 +184,15 @@ public class AdminOrderService {
         Integer orderId = JacksonUtil.parseInteger(body, "orderId");
         String shipSn = JacksonUtil.parseString(body, "shipSn");
         String shipChannel = JacksonUtil.parseString(body, "shipChannel");
+
+        //    - code: "TCS"
+        //      name: "同城送"
+        //同城配送即商家自己配送，运单号系统主动生成
+        if ("TCS".equals(shipChannel)) {
+            String deliveryId = JacksonUtil.parseString(body, "deliveryId");
+            String deliveryName = JacksonUtil.parseString(body, "deliveryName");
+            shipSn = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli() + "T" + orderId+"D"+deliveryId;
+        }
         if (orderId == null || shipSn == null || shipChannel == null) {
             return ResponseUtil.badArgument();
         }
@@ -194,7 +204,7 @@ public class AdminOrderService {
 
         // 如果订单不是已付款状态，则不能发货
         if (!order.getOrderStatus().equals(OrderUtil.STATUS_PAY)) {
-            return ResponseUtil.fail(ORDER_CONFIRM_NOT_ALLOWED, "订单不能确认收货");
+            return ResponseUtil.fail(ORDER_CONFIRM_NOT_ALLOWED, "订单不能确认发货");
         }
 
         order.setOrderStatus(OrderUtil.STATUS_SHIP);
@@ -234,7 +244,7 @@ public class AdminOrderService {
         // 如果订单不是关闭状态(已取消、系统取消、已退款、用户已确认、系统已确认)，则不能删除
         Short status = order.getOrderStatus();
         if (!status.equals(OrderUtil.STATUS_CANCEL) && !status.equals(OrderUtil.STATUS_AUTO_CANCEL) &&
-                !status.equals(OrderUtil.STATUS_CONFIRM) &&!status.equals(OrderUtil.STATUS_AUTO_CONFIRM) &&
+                !status.equals(OrderUtil.STATUS_CONFIRM) && !status.equals(OrderUtil.STATUS_AUTO_CONFIRM) &&
                 !status.equals(OrderUtil.STATUS_REFUND_CONFIRM)) {
             return ResponseUtil.fail(ORDER_DELETE_FAILED, "订单不能删除");
         }
@@ -261,7 +271,7 @@ public class AdminOrderService {
         }
         // 目前只支持回复一次
         LitemallComment comment = commentService.findById(commentId);
-        if(comment == null){
+        if (comment == null) {
             return ResponseUtil.badArgument();
         }
         if (!StringUtils.isEmpty(comment.getAdminContent())) {
